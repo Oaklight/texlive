@@ -4,14 +4,18 @@
 
 Customized TeX Live Docker image for VSCode LaTeX Workshop.
 
+## DockerHub Image
+
+* [oaklight/texlive](https://hub.docker.com/r/oaklight/texlive)
+
 ## Why This Image?
 
 This Docker image ensures that you can compile LaTeX documents locally even when you cannot connect to Overleaf. It provides a consistent and reproducible environment for LaTeX compilation, including all necessary packages and tools.
 
 ## Features
 
-* Pre-configured with `lualatex`,   `latexmk`, and other essential LaTeX tools.
-* Includes common LaTeX packages for academic writing (e.g.,  `ucetd` class,   `natbib`,   `graphicx`, etc.).
+* Pre-configured with `lualatex`,    `latexmk`, and other essential LaTeX tools.
+* Includes common LaTeX packages for academic writing (e.g.,  `ucetd` class,    `natbib`,    `graphicx`, etc.).
 * Optimized for use with VSCode's LaTeX Workshop extension.
 
 ## How to Use with VSCode LaTeX Workshop
@@ -102,7 +106,7 @@ make clean
 
 * Compilation with `lualatex` and `latexmk`.
 * Support for the `ucetd` document class (University of Chicago Electronic Theses and Dissertations).
-* Common packages like `natbib`,   `graphicx`,   `amsmath`, and more.
+* Common packages like `natbib`,    `graphicx`,    `amsmath`, and more.
 
 ## Troubleshooting
 

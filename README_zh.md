@@ -4,6 +4,10 @@
 
 为 VSCode LaTeX Workshop 定制的 TeX Live Docker 镜像。
 
+## DockerHub 镜像
+
+* [oaklight/texlive](https://hub.docker.com/r/oaklight/texlive)
+
 ## 为什么需要这个镜像？
 
 该 Docker 镜像确保在无法连接 Overleaf 时，您仍然可以本地编译 LaTeX 文档。它提供了一个一致且可复现的 LaTeX 编译环境，包含所有必要的包和工具。
