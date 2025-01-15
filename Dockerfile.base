@@ -1,0 +1,16 @@
+# ==== Base Image ====
+FROM debian:bookworm-slim AS base
+
+# Install required packages for the base version
+RUN apt-get update && apt-get install -y \
+        biber \
+        latexmk \
+        make \
+        texlive-plain-generic \
+        texlive-luatex \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the tex-fmt binary (downloaded by the Makefile)
+ARG TEX_FMT_BINARY
+COPY ${TEX_FMT_BINARY} /usr/local/bin/
+RUN chmod +x /usr/local/bin/tex-fmt

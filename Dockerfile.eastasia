@@ -1,0 +1,16 @@
+# ==== Base CN Image ====
+FROM oaklight/texlive:base AS base-cn
+
+# Add Chinese language support
+RUN apt-get update && apt-get install -y \
+        texlive-lang-chinese \
+    && rm -rf /var/lib/apt/lists/*
+
+    
+# ==== Science CN Image ====
+FROM oaklight/texlive:science AS science-cn
+
+# Add Chinese language support
+RUN apt-get update && apt-get install -y \
+        texlive-lang-chinese \
+    && rm -rf /var/lib/apt/lists/*
