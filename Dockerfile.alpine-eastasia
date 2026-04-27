@@ -1,0 +1,14 @@
+# ==== Alpine East Asia Image ====
+ARG BASE_IMAGE=oaklight/texlive:alpine-base
+FROM ${BASE_IMAGE}
+
+# Optional: use a Chinese APK mirror (e.g., mirrors.tuna.tsinghua.edu.cn)
+ARG APK_MIRROR
+RUN if [ -n "$APK_MIRROR" ]; then \
+        sed -i "s|dl-cdn.alpinelinux.org|${APK_MIRROR}|g" /etc/apk/repositories; \
+    fi
+
+# Add CJK language support
+RUN apk add --no-cache \
+        texmf-dist-langchinese \
+        texmf-dist-langcjk

@@ -1,0 +1,26 @@
+# ==== Alpine Base Image ====
+ARG REGISTRY_MIRROR=docker.io
+FROM ${REGISTRY_MIRROR}/alpine:3.23
+
+# Optional: use a Chinese APK mirror (e.g., mirrors.tuna.tsinghua.edu.cn)
+ARG APK_MIRROR
+RUN if [ -n "$APK_MIRROR" ]; then \
+        sed -i "s|dl-cdn.alpinelinux.org|${APK_MIRROR}|g" /etc/apk/repositories; \
+    fi
+
+# Install required packages for the base version
+RUN apk add --no-cache \
+        texlive \
+        texlive-luatex \
+        texmf-dist \
+        texmf-dist-latex \
+        texmf-dist-latexrecommended \
+        texmf-dist-plaingeneric \
+        texmf-dist-luatex \
+        biber \
+        make
+
+# Copy the tex-fmt binary (downloaded by the Makefile)
+ARG TEX_FMT_BINARY
+COPY ${TEX_FMT_BINARY} /usr/local/bin/
+RUN chmod +x /usr/local/bin/tex-fmt

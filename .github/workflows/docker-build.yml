@@ -1,0 +1,218 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "Dockerfile.*"
+      - "Makefile"
+      - ".github/workflows/docker-build.yml"
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: oaklight/texlive
+
+jobs:
+  # ---- Fetch tex-fmt binaries ----
+  fetch-tex-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest tex-fmt version
+        id: version
+        run: |
+          VERSION=$(curl -s https://api.github.com/repos/WGUNDERWOOD/tex-fmt/releases/latest | grep -oP '"tag_name": "\K[^"]+')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Download tex-fmt binaries
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          curl -LO "https://github.com/WGUNDERWOOD/tex-fmt/releases/download/${VERSION}/tex-fmt-x86_64-linux.tar.gz"
+          curl -LO "https://github.com/WGUNDERWOOD/tex-fmt/releases/download/${VERSION}/tex-fmt-x86_64-alpine.tar.gz"
+          mkdir -p linux alpine
+          tar -xzf tex-fmt-x86_64-linux.tar.gz -C linux
+          tar -xzf tex-fmt-x86_64-alpine.tar.gz -C alpine
+
+      - name: Upload tex-fmt artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tex-fmt-binaries
+          path: |
+            linux/tex-fmt
+            alpine/tex-fmt
+
+  # ---- Debian images ----
+  debian-base:
+    needs: fetch-tex-fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: tex-fmt-binaries
+
+      - name: Prepare tex-fmt
+        run: cp linux/tex-fmt tex-fmt && chmod +x tex-fmt
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build and push base
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.base
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:base
+            ${{ env.IMAGE_NAME }}:latest-base
+          build-args: TEX_FMT_BINARY=tex-fmt
+
+  debian-science:
+    needs: debian-base
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build and push science
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.science
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:science
+            ${{ env.IMAGE_NAME }}:latest-science
+            ${{ env.IMAGE_NAME }}:latest
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:base
+
+  debian-eastasia:
+    needs: [debian-base, debian-science]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build and push base-cn
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.eastasia
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:base-cn
+            ${{ env.IMAGE_NAME }}:base-jp
+            ${{ env.IMAGE_NAME }}:base-kr
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:base
+
+      - name: Build and push science-cn
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.eastasia
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:science-cn
+            ${{ env.IMAGE_NAME }}:science-jp
+            ${{ env.IMAGE_NAME }}:science-kr
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:science
+
+  # ---- Alpine images ----
+  alpine-base:
+    needs: fetch-tex-fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: tex-fmt-binaries
+
+      - name: Prepare tex-fmt
+        run: cp alpine/tex-fmt tex-fmt && chmod +x tex-fmt
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build and push alpine-base
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.alpine-base
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:alpine-base
+          build-args: TEX_FMT_BINARY=tex-fmt
+
+  alpine-science:
+    needs: alpine-base
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build and push alpine-science
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.alpine-science
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:alpine-science
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-base
+
+  alpine-eastasia:
+    needs: [alpine-base, alpine-science]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build and push alpine-base-cn
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.alpine-eastasia
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:alpine-base-cn
+            ${{ env.IMAGE_NAME }}:alpine-base-jp
+            ${{ env.IMAGE_NAME }}:alpine-base-kr
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-base
+
+      - name: Build and push alpine-science-cn
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.alpine-eastasia
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:alpine-science-cn
+            ${{ env.IMAGE_NAME }}:alpine-science-jp
+            ${{ env.IMAGE_NAME }}:alpine-science-kr
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-science

@@ -1,0 +1,18 @@
+# ==== Alpine Science Image ====
+ARG BASE_IMAGE=oaklight/texlive:alpine-base
+FROM ${BASE_IMAGE}
+
+# Optional: use a Chinese APK mirror (e.g., mirrors.tuna.tsinghua.edu.cn)
+ARG APK_MIRROR
+RUN if [ -n "$APK_MIRROR" ]; then \
+        sed -i "s|dl-cdn.alpinelinux.org|${APK_MIRROR}|g" /etc/apk/repositories; \
+    fi
+
+# Install additional packages for the science version
+RUN apk add --no-cache \
+        texmf-dist-mathscience \
+        texmf-dist-latexextra \
+        texmf-dist-fontsextra \
+        texmf-dist-fontsrecommended \
+        texlive-binextra \
+        texmf-dist-binextra
