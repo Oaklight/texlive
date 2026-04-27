@@ -68,7 +68,7 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:base
-            ${{ env.IMAGE_NAME }}:latest-base
+            ${{ env.IMAGE_NAME }}:debian-base
           build-args: TEX_FMT_BINARY=tex-fmt
 
   debian-science:
@@ -91,8 +91,7 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:science
-            ${{ env.IMAGE_NAME }}:latest-science
-            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:debian-science
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:base
 
   debian-eastasia:
@@ -117,6 +116,9 @@ jobs:
             ${{ env.IMAGE_NAME }}:base-cn
             ${{ env.IMAGE_NAME }}:base-jp
             ${{ env.IMAGE_NAME }}:base-kr
+            ${{ env.IMAGE_NAME }}:debian-base-cn
+            ${{ env.IMAGE_NAME }}:debian-base-jp
+            ${{ env.IMAGE_NAME }}:debian-base-kr
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:base
 
       - name: Build and push science-cn
@@ -129,6 +131,9 @@ jobs:
             ${{ env.IMAGE_NAME }}:science-cn
             ${{ env.IMAGE_NAME }}:science-jp
             ${{ env.IMAGE_NAME }}:science-kr
+            ${{ env.IMAGE_NAME }}:debian-science-cn
+            ${{ env.IMAGE_NAME }}:debian-science-jp
+            ${{ env.IMAGE_NAME }}:debian-science-kr
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:science
 
   # ---- Alpine images ----
@@ -178,7 +183,9 @@ jobs:
           context: .
           file: Dockerfile.alpine-science
           push: true
-          tags: ${{ env.IMAGE_NAME }}:alpine-science
+          tags: |
+            ${{ env.IMAGE_NAME }}:alpine-science
+            ${{ env.IMAGE_NAME }}:latest
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-base
 
   alpine-eastasia:

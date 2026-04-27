@@ -5,7 +5,7 @@ IMAGE_NAME = oaklight/texlive
 REGISTRY_MIRROR ?= docker.io
 APK_MIRROR ?=
 
-# Debian image tags
+# Debian image tags (backward-compatible short names + explicit debian- prefix)
 IMAGE_TAG_BASE = base
 IMAGE_TAG_BASE_CN = base-cn
 IMAGE_TAG_BASE_JP = base-jp
@@ -14,8 +14,16 @@ IMAGE_TAG_SCIENCE = science
 IMAGE_TAG_SCIENCE_CN = science-cn
 IMAGE_TAG_SCIENCE_JP = science-jp
 IMAGE_TAG_SCIENCE_KR = science-kr
-IMAGE_TAG_LATEST_BASE = latest-base
-IMAGE_TAG_LATEST_SCIENCE = latest-science
+DEBIAN_TAG_BASE = debian-base
+DEBIAN_TAG_BASE_CN = debian-base-cn
+DEBIAN_TAG_BASE_JP = debian-base-jp
+DEBIAN_TAG_BASE_KR = debian-base-kr
+DEBIAN_TAG_SCIENCE = debian-science
+DEBIAN_TAG_SCIENCE_CN = debian-science-cn
+DEBIAN_TAG_SCIENCE_JP = debian-science-jp
+DEBIAN_TAG_SCIENCE_KR = debian-science-kr
+
+# latest -> alpine-science
 IMAGE_TAG_LATEST = latest
 
 # Alpine image tags
@@ -68,12 +76,13 @@ build-base: get-tex-fmt
 	docker build \
 		--build-arg TEX_FMT_BINARY=$(TEX_FMT_BINARY) \
 		-t $(IMAGE_NAME):$(IMAGE_TAG_BASE) \
-		-t $(IMAGE_NAME):$(IMAGE_TAG_LATEST_BASE) \
+		-t $(IMAGE_NAME):$(DEBIAN_TAG_BASE) \
 		-f Dockerfile.base .
 
 build-base-cn: build-base
 	docker build \
 		-t $(IMAGE_NAME):$(IMAGE_TAG_BASE_CN) \
+		-t $(IMAGE_NAME):$(DEBIAN_TAG_BASE_CN) \
 		-f Dockerfile.eastasia \
 		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(IMAGE_TAG_BASE) \
 		.
@@ -81,12 +90,13 @@ build-base-cn: build-base
 retag-base-jp-kr: build-base-cn
 	docker tag $(IMAGE_NAME):$(IMAGE_TAG_BASE_CN) $(IMAGE_NAME):$(IMAGE_TAG_BASE_JP)
 	docker tag $(IMAGE_NAME):$(IMAGE_TAG_BASE_CN) $(IMAGE_NAME):$(IMAGE_TAG_BASE_KR)
+	docker tag $(IMAGE_NAME):$(IMAGE_TAG_BASE_CN) $(IMAGE_NAME):$(DEBIAN_TAG_BASE_JP)
+	docker tag $(IMAGE_NAME):$(IMAGE_TAG_BASE_CN) $(IMAGE_NAME):$(DEBIAN_TAG_BASE_KR)
 
 build-science: build-base
 	docker build \
 		-t $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE) \
-		-t $(IMAGE_NAME):$(IMAGE_TAG_LATEST_SCIENCE) \
-		-t $(IMAGE_NAME):$(IMAGE_TAG_LATEST) \
+		-t $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE) \
 		-f Dockerfile.science \
 		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(IMAGE_TAG_BASE) \
 		.
@@ -94,6 +104,7 @@ build-science: build-base
 build-science-cn: build-science
 	docker build \
 		-t $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_CN) \
+		-t $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_CN) \
 		-f Dockerfile.eastasia \
 		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(IMAGE_TAG_SCIENCE) \
 		.
@@ -101,6 +112,8 @@ build-science-cn: build-science
 retag-science-jp-kr: build-science-cn
 	docker tag $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_CN) $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_JP)
 	docker tag $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_CN) $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_KR)
+	docker tag $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_CN) $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_JP)
+	docker tag $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_CN) $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_KR)
 
 build: build-base build-base-cn retag-base-jp-kr build-science build-science-cn retag-science-jp-kr
 
@@ -132,6 +145,7 @@ alpine-build-science: alpine-build-base
 		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(ALPINE_TAG_BASE) \
 		$(BUILD_ARGS) \
 		-t $(IMAGE_NAME):$(ALPINE_TAG_SCIENCE) \
+		-t $(IMAGE_NAME):$(IMAGE_TAG_LATEST) \
 		-f Dockerfile.alpine-science .
 
 alpine-build-science-cn: alpine-build-science
@@ -160,9 +174,14 @@ push:
 	docker push $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_CN)
 	docker push $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_JP)
 	docker push $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_KR)
-	docker push $(IMAGE_NAME):$(IMAGE_TAG_LATEST_BASE)
-	docker push $(IMAGE_NAME):$(IMAGE_TAG_LATEST_SCIENCE)
-	docker push $(IMAGE_NAME):$(IMAGE_TAG_LATEST)
+	docker push $(IMAGE_NAME):$(DEBIAN_TAG_BASE)
+	docker push $(IMAGE_NAME):$(DEBIAN_TAG_BASE_CN)
+	docker push $(IMAGE_NAME):$(DEBIAN_TAG_BASE_JP)
+	docker push $(IMAGE_NAME):$(DEBIAN_TAG_BASE_KR)
+	docker push $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE)
+	docker push $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_CN)
+	docker push $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_JP)
+	docker push $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_KR)
 
 alpine-push:
 	docker push $(IMAGE_NAME):$(ALPINE_TAG_BASE)
@@ -173,6 +192,7 @@ alpine-push:
 	docker push $(IMAGE_NAME):$(ALPINE_TAG_SCIENCE_CN)
 	docker push $(IMAGE_NAME):$(ALPINE_TAG_SCIENCE_JP)
 	docker push $(IMAGE_NAME):$(ALPINE_TAG_SCIENCE_KR)
+	docker push $(IMAGE_NAME):$(IMAGE_TAG_LATEST)
 
 push-all: push alpine-push
 
@@ -182,7 +202,7 @@ push-all: push alpine-push
 
 clean:
 	docker rmi $(IMAGE_NAME):$(IMAGE_TAG_BASE) $(IMAGE_NAME):$(IMAGE_TAG_BASE_CN) $(IMAGE_NAME):$(IMAGE_TAG_BASE_JP) $(IMAGE_NAME):$(IMAGE_TAG_BASE_KR) $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE) $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_CN) $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_JP) $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_KR) || true
-	docker rmi $(IMAGE_NAME):$(IMAGE_TAG_LATEST_BASE) $(IMAGE_NAME):$(IMAGE_TAG_LATEST_SCIENCE) $(IMAGE_NAME):$(IMAGE_TAG_LATEST) || true
+	docker rmi $(IMAGE_NAME):$(DEBIAN_TAG_BASE) $(IMAGE_NAME):$(DEBIAN_TAG_BASE_CN) $(IMAGE_NAME):$(DEBIAN_TAG_BASE_JP) $(IMAGE_NAME):$(DEBIAN_TAG_BASE_KR) $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE) $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_CN) $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_JP) $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_KR) || true
 	rm -f $(TEX_FMT_BINARY) $(TEX_FMT_BINARY).tar.gz
 
 alpine-clean:
