@@ -18,22 +18,30 @@ This Docker image ensures that you can compile LaTeX documents locally even when
 |-----|------|----------|-------------|
 | `latest` | Alpine 3.23 | 2025 | Alias for `alpine-science` |
 | **Alpine** | | | |
-| `alpine-base` | Alpine 3.23 | 2025 | Core LaTeX + LuaTeX + biber |
+| `alpine-base` | Alpine 3.23 | 2025 | Core LaTeX + LuaTeX + XeTeX + biber |
 | `alpine-science` | Alpine 3.23 | 2025 | + science/math/fonts packages |
-| `alpine-base-cn` | Alpine 3.23 | 2025 | Base + CJK language support |
-| `alpine-science-cn` | Alpine 3.23 | 2025 | Science + CJK language support |
+| `alpine-base-cn` | Alpine 3.23 | 2025 | Base + Chinese (ctex, xeCJK, CJKutf8) |
+| `alpine-science-cn` | Alpine 3.23 | 2025 | Science + Chinese |
+| `alpine-base-jp` | Alpine 3.23 | 2025 | Base + Japanese (luatexja, platex, uplatex) |
+| `alpine-science-jp` | Alpine 3.23 | 2025 | Science + Japanese |
+| `alpine-base-kr` | Alpine 3.23 | 2025 | Base + Korean (kotex, nanumtype1) |
+| `alpine-science-kr` | Alpine 3.23 | 2025 | Science + Korean |
 | **Debian** | | | |
-| `debian-base` / `base` | Debian bookworm | 2022 | Core LaTeX + LuaTeX + biber |
+| `debian-base` / `base` | Debian bookworm | 2022 | Core LaTeX + LuaTeX + XeTeX + biber |
 | `debian-science` / `science` | Debian bookworm | 2022 | + science/math/fonts packages |
-| `debian-base-cn` / `base-cn` | Debian bookworm | 2022 | Base + CJK language support |
-| `debian-science-cn` / `science-cn` | Debian bookworm | 2022 | Science + CJK language support |
+| `debian-base-cn` / `base-cn` | Debian bookworm | 2022 | Base + Chinese |
+| `debian-science-cn` / `science-cn` | Debian bookworm | 2022 | Science + Chinese |
+| `debian-base-jp` / `base-jp` | Debian bookworm | 2022 | Base + Japanese |
+| `debian-science-jp` / `science-jp` | Debian bookworm | 2022 | Science + Japanese |
+| `debian-base-kr` / `base-kr` | Debian bookworm | 2022 | Base + Korean |
+| `debian-science-kr` / `science-kr` | Debian bookworm | 2022 | Science + Korean |
 
-> JP and KR tags (e.g., `alpine-base-jp`, `base-kr`) are also available as aliases for the corresponding CN tags.
+> Each language variant installs the language-specific TeX packages for that country. CN/JP/KR images are independently built with different contents.
 
 ## Features
 
 * **Two base OS choices**: Alpine (smaller, newer TeX Live) and Debian (backward-compatible).
-* Pre-configured with `lualatex`, `latexmk`, `biber`, and other essential LaTeX tools.
+* Pre-configured with `pdflatex`, `lualatex`, `xelatex`, `latexmk`, `biber`, and other essential LaTeX tools.
 * Includes [`tex-fmt`](https://github.com/WGUNDERWOOD/tex-fmt) for LaTeX source formatting.
 * Includes common LaTeX packages for academic writing (e.g., `ucetd` class, `natbib`, `graphicx`, etc.).
 * Optimized for use with VSCode's LaTeX Workshop extension.
@@ -133,14 +141,14 @@ Run `make help` for a full list of targets and variables.
 
 ## Supported LaTeX Features
 
-* Compilation with `lualatex`, `pdflatex`, and `latexmk`.
+* Compilation with `pdflatex`, `lualatex`, `xelatex`, and `latexmk`.
 * Support for the `ucetd` document class (University of Chicago Electronic Theses and Dissertations).
 * Common packages like `natbib`, `graphicx`, `amsmath`, and more.
 * CJK language support (Chinese, Japanese, Korean) in `-cn` / `-jp` / `-kr` variants.
 
 ## Troubleshooting
 
-* If you encounter missing packages, ensure they are installed in the Docker image. You can modify the corresponding `Dockerfile` to include additional packages.
+* If you encounter missing packages, ensure they are installed in the Docker image. You can modify the corresponding Dockerfile under `docker/` to include additional packages.
 * Check the `main.log` file for detailed error messages during compilation.
 
 ## License

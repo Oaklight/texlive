@@ -1,4 +1,4 @@
-# ==== Alpine East Asia Image ====
+# ==== Alpine Korean Language Support ====
 ARG BASE_IMAGE=oaklight/texlive:alpine-base
 FROM ${BASE_IMAGE}
 
@@ -8,7 +8,7 @@ RUN if [ -n "$APK_MIRROR" ]; then \
         sed -i "s|dl-cdn.alpinelinux.org|${APK_MIRROR}|g" /etc/apk/repositories; \
     fi
 
-# Add CJK language support
+# Korean support: kotex, nanumtype1, Nanum fonts
 RUN apk add --no-cache \
-        texmf-dist-langchinese \
+        texmf-dist-langkorean \
         texmf-dist-langcjk

@@ -18,22 +18,30 @@
 |------|----------|----------|------|
 | `latest` | Alpine 3.23 | 2025 | `alpine-science` 的别名 |
 | **Alpine** | | | |
-| `alpine-base` | Alpine 3.23 | 2025 | 核心 LaTeX + LuaTeX + biber |
+| `alpine-base` | Alpine 3.23 | 2025 | 核心 LaTeX + LuaTeX + XeTeX + biber |
 | `alpine-science` | Alpine 3.23 | 2025 | + 科学/数学/字体包 |
-| `alpine-base-cn` | Alpine 3.23 | 2025 | Base + 中日韩语言支持 |
-| `alpine-science-cn` | Alpine 3.23 | 2025 | Science + 中日韩语言支持 |
+| `alpine-base-cn` | Alpine 3.23 | 2025 | Base + 中文支持（ctex、xeCJK、CJKutf8） |
+| `alpine-science-cn` | Alpine 3.23 | 2025 | Science + 中文支持 |
+| `alpine-base-jp` | Alpine 3.23 | 2025 | Base + 日文支持（luatexja、platex、uplatex） |
+| `alpine-science-jp` | Alpine 3.23 | 2025 | Science + 日文支持 |
+| `alpine-base-kr` | Alpine 3.23 | 2025 | Base + 韩文支持（kotex、nanumtype1） |
+| `alpine-science-kr` | Alpine 3.23 | 2025 | Science + 韩文支持 |
 | **Debian** | | | |
-| `debian-base` / `base` | Debian bookworm | 2022 | 核心 LaTeX + LuaTeX + biber |
+| `debian-base` / `base` | Debian bookworm | 2022 | 核心 LaTeX + LuaTeX + XeTeX + biber |
 | `debian-science` / `science` | Debian bookworm | 2022 | + 科学/数学/字体包 |
-| `debian-base-cn` / `base-cn` | Debian bookworm | 2022 | Base + 中日韩语言支持 |
-| `debian-science-cn` / `science-cn` | Debian bookworm | 2022 | Science + 中日韩语言支持 |
+| `debian-base-cn` / `base-cn` | Debian bookworm | 2022 | Base + 中文支持 |
+| `debian-science-cn` / `science-cn` | Debian bookworm | 2022 | Science + 中文支持 |
+| `debian-base-jp` / `base-jp` | Debian bookworm | 2022 | Base + 日文支持 |
+| `debian-science-jp` / `science-jp` | Debian bookworm | 2022 | Science + 日文支持 |
+| `debian-base-kr` / `base-kr` | Debian bookworm | 2022 | Base + 韩文支持 |
+| `debian-science-kr` / `science-kr` | Debian bookworm | 2022 | Science + 韩文支持 |
 
-> JP 和 KR 标签（如 `alpine-base-jp`、`base-kr`）也可用，它们是对应 CN 标签的别名。
+> 每个语言变体独立构建，安装对应国家的 TeX 语言包。CN/JP/KR 镜像内容各不相同。
 
 ## 功能
 
 * **两种基础系统可选**：Alpine（更小、更新的 TeX Live）和 Debian（向后兼容）。
-* 预配置了 `lualatex`、`latexmk`、`biber` 和其他必要的 LaTeX 工具。
+* 预配置了 `pdflatex`、`lualatex`、`xelatex`、`latexmk`、`biber` 和其他必要的 LaTeX 工具。
 * 包含 [`tex-fmt`](https://github.com/WGUNDERWOOD/tex-fmt) 用于 LaTeX 源码格式化。
 * 包含学术写作中常用的 LaTeX 包（如 `ucetd` 文档类、`natbib`、`graphicx` 等）。
 * 针对 VSCode 的 LaTeX Workshop 扩展进行了优化。
@@ -133,14 +141,14 @@ make alpine-clean # 仅删除 Alpine 镜像
 
 ## 支持的 LaTeX 功能
 
-* 使用 `lualatex`、`pdflatex` 和 `latexmk` 进行编译。
+* 使用 `pdflatex`、`lualatex`、`xelatex` 和 `latexmk` 进行编译。
 * 支持 `ucetd` 文档类（芝加哥大学电子论文和学位论文）。
 * 包含常用包，如 `natbib`、`graphicx`、`amsmath` 等。
 * 中日韩语言支持，通过 `-cn` / `-jp` / `-kr` 变体提供。
 
 ## 故障排除
 
-* 如果遇到缺少的包，请确保它们在 Docker 镜像中已安装。您可以修改对应的 `Dockerfile` 以包含其他包。
+* 如果遇到缺少的包，请确保它们在 Docker 镜像中已安装。您可以修改 `docker/` 目录下对应的 Dockerfile 以包含其他包。
 * 编译过程中，检查 `main.log` 文件以获取详细的错误信息。
 
 ## 许可证

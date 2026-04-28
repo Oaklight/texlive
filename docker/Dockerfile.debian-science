@@ -1,5 +1,6 @@
-# ==== Science Image ====
-FROM oaklight/texlive:base
+# ==== Debian Science Image ====
+ARG BASE_IMAGE=oaklight/texlive:base
+FROM ${BASE_IMAGE}
 
 # Install additional packages for the science version
 RUN apt-get update && apt-get install -y \

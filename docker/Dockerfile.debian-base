@@ -1,4 +1,4 @@
-# ==== Base Image ====
+# ==== Debian Base Image ====
 FROM debian:bookworm-slim AS base
 
 # Install required packages for the base version
@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
         make \
         texlive-plain-generic \
         texlive-luatex \
+        texlive-xetex \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the tex-fmt binary (downloaded by the Makefile)

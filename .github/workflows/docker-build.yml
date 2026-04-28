@@ -4,7 +4,7 @@ on:
   push:
     branches: [master]
     paths:
-      - "Dockerfile.*"
+      - "docker/Dockerfile.*"
       - "Makefile"
       - ".github/workflows/docker-build.yml"
   workflow_dispatch:
@@ -64,7 +64,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.base
+          file: docker/Dockerfile.debian-base
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:base
@@ -87,14 +87,14 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.science
+          file: docker/Dockerfile.debian-science
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:science
             ${{ env.IMAGE_NAME }}:debian-science
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:base
 
-  debian-eastasia:
+  debian-lang:
     needs: [debian-base, debian-science]
     runs-on: ubuntu-latest
     steps:
@@ -106,33 +106,72 @@ jobs:
 
       - uses: docker/setup-buildx-action@v3
 
+      # ---- Chinese ----
       - name: Build and push base-cn
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.eastasia
+          file: docker/Dockerfile.debian-cn
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:base-cn
-            ${{ env.IMAGE_NAME }}:base-jp
-            ${{ env.IMAGE_NAME }}:base-kr
             ${{ env.IMAGE_NAME }}:debian-base-cn
-            ${{ env.IMAGE_NAME }}:debian-base-jp
-            ${{ env.IMAGE_NAME }}:debian-base-kr
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:base
 
       - name: Build and push science-cn
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.eastasia
+          file: docker/Dockerfile.debian-cn
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:science-cn
-            ${{ env.IMAGE_NAME }}:science-jp
-            ${{ env.IMAGE_NAME }}:science-kr
             ${{ env.IMAGE_NAME }}:debian-science-cn
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:science
+
+      # ---- Japanese ----
+      - name: Build and push base-jp
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.debian-jp
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:base-jp
+            ${{ env.IMAGE_NAME }}:debian-base-jp
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:base
+
+      - name: Build and push science-jp
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.debian-jp
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:science-jp
             ${{ env.IMAGE_NAME }}:debian-science-jp
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:science
+
+      # ---- Korean ----
+      - name: Build and push base-kr
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.debian-kr
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:base-kr
+            ${{ env.IMAGE_NAME }}:debian-base-kr
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:base
+
+      - name: Build and push science-kr
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.debian-kr
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:science-kr
             ${{ env.IMAGE_NAME }}:debian-science-kr
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:science
 
@@ -160,7 +199,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.alpine-base
+          file: docker/Dockerfile.alpine-base
           push: true
           tags: ${{ env.IMAGE_NAME }}:alpine-base
           build-args: TEX_FMT_BINARY=tex-fmt
@@ -181,14 +220,14 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.alpine-science
+          file: docker/Dockerfile.alpine-science
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:alpine-science
             ${{ env.IMAGE_NAME }}:latest
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-base
 
-  alpine-eastasia:
+  alpine-lang:
     needs: [alpine-base, alpine-science]
     runs-on: ubuntu-latest
     steps:
@@ -200,26 +239,59 @@ jobs:
 
       - uses: docker/setup-buildx-action@v3
 
+      # ---- Chinese ----
       - name: Build and push alpine-base-cn
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.alpine-eastasia
+          file: docker/Dockerfile.alpine-cn
           push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:alpine-base-cn
-            ${{ env.IMAGE_NAME }}:alpine-base-jp
-            ${{ env.IMAGE_NAME }}:alpine-base-kr
+          tags: ${{ env.IMAGE_NAME }}:alpine-base-cn
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-base
 
       - name: Build and push alpine-science-cn
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.alpine-eastasia
+          file: docker/Dockerfile.alpine-cn
           push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:alpine-science-cn
-            ${{ env.IMAGE_NAME }}:alpine-science-jp
-            ${{ env.IMAGE_NAME }}:alpine-science-kr
+          tags: ${{ env.IMAGE_NAME }}:alpine-science-cn
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-science
+
+      # ---- Japanese ----
+      - name: Build and push alpine-base-jp
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.alpine-jp
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:alpine-base-jp
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-base
+
+      - name: Build and push alpine-science-jp
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.alpine-jp
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:alpine-science-jp
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-science
+
+      # ---- Korean ----
+      - name: Build and push alpine-base-kr
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.alpine-kr
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:alpine-base-kr
+          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-base
+
+      - name: Build and push alpine-science-kr
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.alpine-kr
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:alpine-science-kr
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-science

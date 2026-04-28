@@ -69,7 +69,7 @@ get-tex-fmt-alpine:
 	chmod +x $(TEX_FMT_BINARY)
 
 # ============================================================
-# Debian targets (original)
+# Debian targets
 # ============================================================
 
 build-base: get-tex-fmt
@@ -77,27 +77,37 @@ build-base: get-tex-fmt
 		--build-arg TEX_FMT_BINARY=$(TEX_FMT_BINARY) \
 		-t $(IMAGE_NAME):$(IMAGE_TAG_BASE) \
 		-t $(IMAGE_NAME):$(DEBIAN_TAG_BASE) \
-		-f Dockerfile.base .
-
-build-base-cn: build-base
-	docker build \
-		-t $(IMAGE_NAME):$(IMAGE_TAG_BASE_CN) \
-		-t $(IMAGE_NAME):$(DEBIAN_TAG_BASE_CN) \
-		-f Dockerfile.eastasia \
-		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(IMAGE_TAG_BASE) \
-		.
-
-retag-base-jp-kr: build-base-cn
-	docker tag $(IMAGE_NAME):$(IMAGE_TAG_BASE_CN) $(IMAGE_NAME):$(IMAGE_TAG_BASE_JP)
-	docker tag $(IMAGE_NAME):$(IMAGE_TAG_BASE_CN) $(IMAGE_NAME):$(IMAGE_TAG_BASE_KR)
-	docker tag $(IMAGE_NAME):$(IMAGE_TAG_BASE_CN) $(IMAGE_NAME):$(DEBIAN_TAG_BASE_JP)
-	docker tag $(IMAGE_NAME):$(IMAGE_TAG_BASE_CN) $(IMAGE_NAME):$(DEBIAN_TAG_BASE_KR)
+		-f docker/Dockerfile.debian-base .
 
 build-science: build-base
 	docker build \
 		-t $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE) \
 		-t $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE) \
-		-f Dockerfile.science \
+		-f docker/Dockerfile.debian-science \
+		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(IMAGE_TAG_BASE) \
+		.
+
+build-base-cn: build-base
+	docker build \
+		-t $(IMAGE_NAME):$(IMAGE_TAG_BASE_CN) \
+		-t $(IMAGE_NAME):$(DEBIAN_TAG_BASE_CN) \
+		-f docker/Dockerfile.debian-cn \
+		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(IMAGE_TAG_BASE) \
+		.
+
+build-base-jp: build-base
+	docker build \
+		-t $(IMAGE_NAME):$(IMAGE_TAG_BASE_JP) \
+		-t $(IMAGE_NAME):$(DEBIAN_TAG_BASE_JP) \
+		-f docker/Dockerfile.debian-jp \
+		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(IMAGE_TAG_BASE) \
+		.
+
+build-base-kr: build-base
+	docker build \
+		-t $(IMAGE_NAME):$(IMAGE_TAG_BASE_KR) \
+		-t $(IMAGE_NAME):$(DEBIAN_TAG_BASE_KR) \
+		-f docker/Dockerfile.debian-kr \
 		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(IMAGE_TAG_BASE) \
 		.
 
@@ -105,17 +115,28 @@ build-science-cn: build-science
 	docker build \
 		-t $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_CN) \
 		-t $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_CN) \
-		-f Dockerfile.eastasia \
+		-f docker/Dockerfile.debian-cn \
 		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(IMAGE_TAG_SCIENCE) \
 		.
 
-retag-science-jp-kr: build-science-cn
-	docker tag $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_CN) $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_JP)
-	docker tag $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_CN) $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_KR)
-	docker tag $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_CN) $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_JP)
-	docker tag $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_CN) $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_KR)
+build-science-jp: build-science
+	docker build \
+		-t $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_JP) \
+		-t $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_JP) \
+		-f docker/Dockerfile.debian-jp \
+		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(IMAGE_TAG_SCIENCE) \
+		.
 
-build: build-base build-base-cn retag-base-jp-kr build-science build-science-cn retag-science-jp-kr
+build-science-kr: build-science
+	docker build \
+		-t $(IMAGE_NAME):$(IMAGE_TAG_SCIENCE_KR) \
+		-t $(IMAGE_NAME):$(DEBIAN_TAG_SCIENCE_KR) \
+		-f docker/Dockerfile.debian-kr \
+		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(IMAGE_TAG_SCIENCE) \
+		.
+
+build: build-base build-base-cn build-base-jp build-base-kr \
+       build-science build-science-cn build-science-jp build-science-kr
 
 # ============================================================
 # Alpine targets
@@ -127,18 +148,7 @@ alpine-build-base: get-tex-fmt-alpine
 		--build-arg TEX_FMT_BINARY=$(TEX_FMT_BINARY) \
 		$(BUILD_ARGS) \
 		-t $(IMAGE_NAME):$(ALPINE_TAG_BASE) \
-		-f Dockerfile.alpine-base .
-
-alpine-build-base-cn: alpine-build-base
-	docker build \
-		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(ALPINE_TAG_BASE) \
-		$(BUILD_ARGS) \
-		-t $(IMAGE_NAME):$(ALPINE_TAG_BASE_CN) \
-		-f Dockerfile.alpine-eastasia .
-
-alpine-retag-base-jp-kr: alpine-build-base-cn
-	docker tag $(IMAGE_NAME):$(ALPINE_TAG_BASE_CN) $(IMAGE_NAME):$(ALPINE_TAG_BASE_JP)
-	docker tag $(IMAGE_NAME):$(ALPINE_TAG_BASE_CN) $(IMAGE_NAME):$(ALPINE_TAG_BASE_KR)
+		-f docker/Dockerfile.alpine-base .
 
 alpine-build-science: alpine-build-base
 	docker build \
@@ -146,20 +156,52 @@ alpine-build-science: alpine-build-base
 		$(BUILD_ARGS) \
 		-t $(IMAGE_NAME):$(ALPINE_TAG_SCIENCE) \
 		-t $(IMAGE_NAME):$(IMAGE_TAG_LATEST) \
-		-f Dockerfile.alpine-science .
+		-f docker/Dockerfile.alpine-science .
+
+alpine-build-base-cn: alpine-build-base
+	docker build \
+		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(ALPINE_TAG_BASE) \
+		$(BUILD_ARGS) \
+		-t $(IMAGE_NAME):$(ALPINE_TAG_BASE_CN) \
+		-f docker/Dockerfile.alpine-cn .
+
+alpine-build-base-jp: alpine-build-base
+	docker build \
+		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(ALPINE_TAG_BASE) \
+		$(BUILD_ARGS) \
+		-t $(IMAGE_NAME):$(ALPINE_TAG_BASE_JP) \
+		-f docker/Dockerfile.alpine-jp .
+
+alpine-build-base-kr: alpine-build-base
+	docker build \
+		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(ALPINE_TAG_BASE) \
+		$(BUILD_ARGS) \
+		-t $(IMAGE_NAME):$(ALPINE_TAG_BASE_KR) \
+		-f docker/Dockerfile.alpine-kr .
 
 alpine-build-science-cn: alpine-build-science
 	docker build \
 		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(ALPINE_TAG_SCIENCE) \
 		$(BUILD_ARGS) \
 		-t $(IMAGE_NAME):$(ALPINE_TAG_SCIENCE_CN) \
-		-f Dockerfile.alpine-eastasia .
+		-f docker/Dockerfile.alpine-cn .
 
-alpine-retag-science-jp-kr: alpine-build-science-cn
-	docker tag $(IMAGE_NAME):$(ALPINE_TAG_SCIENCE_CN) $(IMAGE_NAME):$(ALPINE_TAG_SCIENCE_JP)
-	docker tag $(IMAGE_NAME):$(ALPINE_TAG_SCIENCE_CN) $(IMAGE_NAME):$(ALPINE_TAG_SCIENCE_KR)
+alpine-build-science-jp: alpine-build-science
+	docker build \
+		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(ALPINE_TAG_SCIENCE) \
+		$(BUILD_ARGS) \
+		-t $(IMAGE_NAME):$(ALPINE_TAG_SCIENCE_JP) \
+		-f docker/Dockerfile.alpine-jp .
 
-alpine-build: alpine-build-base alpine-build-base-cn alpine-retag-base-jp-kr alpine-build-science alpine-build-science-cn alpine-retag-science-jp-kr
+alpine-build-science-kr: alpine-build-science
+	docker build \
+		--build-arg BASE_IMAGE=$(IMAGE_NAME):$(ALPINE_TAG_SCIENCE) \
+		$(BUILD_ARGS) \
+		-t $(IMAGE_NAME):$(ALPINE_TAG_SCIENCE_KR) \
+		-f docker/Dockerfile.alpine-kr .
+
+alpine-build: alpine-build-base alpine-build-base-cn alpine-build-base-jp alpine-build-base-kr \
+              alpine-build-science alpine-build-science-cn alpine-build-science-jp alpine-build-science-kr
 
 # ============================================================
 # Push
@@ -221,18 +263,24 @@ help:
 	@echo "  Debian:"
 	@echo "    build-base           - Build the base Docker image"
 	@echo "    build-base-cn        - Build the base CN Docker image"
-	@echo "    retag-base-jp-kr     - Retag base CN to base JP and base KR"
+	@echo "    build-base-jp        - Build the base JP Docker image"
+	@echo "    build-base-kr        - Build the base KR Docker image"
 	@echo "    build-science        - Build the science Docker image"
 	@echo "    build-science-cn     - Build the science CN Docker image"
-	@echo "    retag-science-jp-kr  - Retag science CN to science JP and science KR"
+	@echo "    build-science-jp     - Build the science JP Docker image"
+	@echo "    build-science-kr     - Build the science KR Docker image"
 	@echo "    build                - Build all Debian images"
 	@echo "    push                 - Push all Debian images"
 	@echo ""
 	@echo "  Alpine:"
 	@echo "    alpine-build-base         - Build the Alpine base image"
 	@echo "    alpine-build-base-cn      - Build the Alpine base CN image"
+	@echo "    alpine-build-base-jp      - Build the Alpine base JP image"
+	@echo "    alpine-build-base-kr      - Build the Alpine base KR image"
 	@echo "    alpine-build-science      - Build the Alpine science image"
 	@echo "    alpine-build-science-cn   - Build the Alpine science CN image"
+	@echo "    alpine-build-science-jp   - Build the Alpine science JP image"
+	@echo "    alpine-build-science-kr   - Build the Alpine science KR image"
 	@echo "    alpine-build              - Build all Alpine images"
 	@echo "    alpine-push               - Push all Alpine images"
 	@echo ""
@@ -252,7 +300,10 @@ help:
 	@echo "  make alpine-build APK_MIRROR=mirrors.ustc.edu.cn"
 	@echo "  make alpine-build REGISTRY_MIRROR=docker.1ms.run APK_MIRROR=mirrors.tuna.tsinghua.edu.cn"
 
-.PHONY: all build build-base build-base-cn retag-base-jp-kr build-science build-science-cn retag-science-jp-kr push clean help
+.PHONY: all build build-base build-base-cn build-base-jp build-base-kr
+.PHONY: build-science build-science-cn build-science-jp build-science-kr
+.PHONY: push clean help
 .PHONY: get-tex-fmt get-tex-fmt-alpine
-.PHONY: alpine-build alpine-build-base alpine-build-base-cn alpine-retag-base-jp-kr alpine-build-science alpine-build-science-cn alpine-retag-science-jp-kr
+.PHONY: alpine-build alpine-build-base alpine-build-base-cn alpine-build-base-jp alpine-build-base-kr
+.PHONY: alpine-build-science alpine-build-science-cn alpine-build-science-jp alpine-build-science-kr
 .PHONY: alpine-push alpine-clean push-all clean-all

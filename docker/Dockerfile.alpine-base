@@ -12,6 +12,7 @@ RUN if [ -n "$APK_MIRROR" ]; then \
 RUN apk add --no-cache \
         texlive \
         texlive-luatex \
+        texlive-xetex \
         texmf-dist \
         texmf-dist-latex \
         texmf-dist-latexrecommended \

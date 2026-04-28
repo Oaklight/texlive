@@ -1,0 +1,16 @@
+# ==== Alpine Chinese Language Support ====
+ARG BASE_IMAGE=oaklight/texlive:alpine-base
+FROM ${BASE_IMAGE}
+
+# Optional: use a Chinese APK mirror (e.g., mirrors.tuna.tsinghua.edu.cn)
+ARG APK_MIRROR
+RUN if [ -n "$APK_MIRROR" ]; then \
+        sed -i "s|dl-cdn.alpinelinux.org|${APK_MIRROR}|g" /etc/apk/repositories; \
+    fi
+
+# Chinese support: ctex, xeCJK, CJKutf8, Fandol/arphic fonts
+# Also install langjapanese for luatexja (required by ctex when using lualatex)
+RUN apk add --no-cache \
+        texmf-dist-langchinese \
+        texmf-dist-langcjk \
+        texmf-dist-langjapanese

@@ -1,0 +1,10 @@
+# ==== Debian Chinese Language Support ====
+ARG BASE_IMAGE=oaklight/texlive:base
+FROM ${BASE_IMAGE}
+
+# Chinese support: ctex, xeCJK, CJKutf8, fonts
+# Also install lang-japanese for luatexja (required by ctex when using lualatex)
+RUN apt-get update && apt-get install -y \
+        texlive-lang-chinese \
+        texlive-lang-japanese \
+    && rm -rf /var/lib/apt/lists/*
