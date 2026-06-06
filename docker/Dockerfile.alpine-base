@@ -21,7 +21,13 @@ RUN apk add --no-cache \
         biber \
         make
 
-# Copy the tex-fmt binary (downloaded by the Makefile)
-ARG TEX_FMT_BINARY
-COPY ${TEX_FMT_BINARY} /usr/local/bin/
-RUN chmod +x /usr/local/bin/tex-fmt
+# Copy the tex-fmt binary for the target platform.
+ARG TEX_FMT_DIR=alpine
+ARG TARGETARCH
+COPY ${TEX_FMT_DIR}/ /tmp/tex-fmt/
+RUN case "${TARGETARCH}" in \
+        amd64) cp /tmp/tex-fmt/amd64/tex-fmt /usr/local/bin/tex-fmt ;; \
+        *) echo "Unsupported Alpine architecture: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac \
+    && chmod +x /usr/local/bin/tex-fmt \
+    && rm -rf /tmp/tex-fmt

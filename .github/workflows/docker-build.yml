@@ -26,19 +26,22 @@ jobs:
       - name: Download tex-fmt binaries
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          curl -LO "https://github.com/WGUNDERWOOD/tex-fmt/releases/download/${VERSION}/tex-fmt-x86_64-linux.tar.gz"
-          curl -LO "https://github.com/WGUNDERWOOD/tex-fmt/releases/download/${VERSION}/tex-fmt-x86_64-alpine.tar.gz"
-          mkdir -p linux alpine
-          tar -xzf tex-fmt-x86_64-linux.tar.gz -C linux
-          tar -xzf tex-fmt-x86_64-alpine.tar.gz -C alpine
+          mkdir -p linux/amd64 linux/arm64 alpine/amd64
+          curl -L -o tex-fmt-x86_64-linux.tar.gz "https://github.com/WGUNDERWOOD/tex-fmt/releases/download/${VERSION}/tex-fmt-x86_64-linux.tar.gz"
+          curl -L -o tex-fmt-aarch64-linux.tar.gz "https://github.com/WGUNDERWOOD/tex-fmt/releases/download/${VERSION}/tex-fmt-aarch64-linux.tar.gz"
+          curl -L -o tex-fmt-x86_64-alpine.tar.gz "https://github.com/WGUNDERWOOD/tex-fmt/releases/download/${VERSION}/tex-fmt-x86_64-alpine.tar.gz"
+          tar -xzf tex-fmt-x86_64-linux.tar.gz -C linux/amd64
+          tar -xzf tex-fmt-aarch64-linux.tar.gz -C linux/arm64
+          tar -xzf tex-fmt-x86_64-alpine.tar.gz -C alpine/amd64
 
       - name: Upload tex-fmt artifacts
         uses: actions/upload-artifact@v4
         with:
           name: tex-fmt-binaries
           path: |
-            linux/tex-fmt
-            alpine/tex-fmt
+            linux/amd64/tex-fmt
+            linux/arm64/tex-fmt
+            alpine/amd64/tex-fmt
 
   # ---- Debian images ----
   debian-base:
@@ -50,13 +53,12 @@ jobs:
         with:
           name: tex-fmt-binaries
 
-      - name: Prepare tex-fmt
-        run: cp linux/tex-fmt tex-fmt && chmod +x tex-fmt
-
       - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-qemu-action@v3
 
       - uses: docker/setup-buildx-action@v3
 
@@ -69,7 +71,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:base
             ${{ env.IMAGE_NAME }}:debian-base
-          build-args: TEX_FMT_BINARY=tex-fmt
+          platforms: linux/amd64,linux/arm64
+          build-args: TEX_FMT_DIR=linux
 
   debian-science:
     needs: debian-base
@@ -81,6 +84,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - uses: docker/setup-qemu-action@v3
+
       - uses: docker/setup-buildx-action@v3
 
       - name: Build and push science
@@ -89,6 +94,7 @@ jobs:
           context: .
           file: docker/Dockerfile.debian-science
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:science
             ${{ env.IMAGE_NAME }}:debian-science
@@ -104,6 +110,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - uses: docker/setup-qemu-action@v3
+
       - uses: docker/setup-buildx-action@v3
 
       # ---- Chinese ----
@@ -113,6 +121,7 @@ jobs:
           context: .
           file: docker/Dockerfile.debian-cn
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:base-cn
             ${{ env.IMAGE_NAME }}:debian-base-cn
@@ -124,6 +133,7 @@ jobs:
           context: .
           file: docker/Dockerfile.debian-cn
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:science-cn
             ${{ env.IMAGE_NAME }}:debian-science-cn
@@ -136,6 +146,7 @@ jobs:
           context: .
           file: docker/Dockerfile.debian-jp
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:base-jp
             ${{ env.IMAGE_NAME }}:debian-base-jp
@@ -147,6 +158,7 @@ jobs:
           context: .
           file: docker/Dockerfile.debian-jp
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:science-jp
             ${{ env.IMAGE_NAME }}:debian-science-jp
@@ -159,6 +171,7 @@ jobs:
           context: .
           file: docker/Dockerfile.debian-kr
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:base-kr
             ${{ env.IMAGE_NAME }}:debian-base-kr
@@ -170,6 +183,7 @@ jobs:
           context: .
           file: docker/Dockerfile.debian-kr
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:science-kr
             ${{ env.IMAGE_NAME }}:debian-science-kr
@@ -185,13 +199,12 @@ jobs:
         with:
           name: tex-fmt-binaries
 
-      - name: Prepare tex-fmt
-        run: cp alpine/tex-fmt tex-fmt && chmod +x tex-fmt
-
       - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-qemu-action@v3
 
       - uses: docker/setup-buildx-action@v3
 
@@ -202,7 +215,7 @@ jobs:
           file: docker/Dockerfile.alpine-base
           push: true
           tags: ${{ env.IMAGE_NAME }}:alpine-base
-          build-args: TEX_FMT_BINARY=tex-fmt
+          build-args: TEX_FMT_DIR=alpine
 
   alpine-science:
     needs: alpine-base
@@ -213,6 +226,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-qemu-action@v3
 
       - uses: docker/setup-buildx-action@v3
 
@@ -236,6 +251,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-qemu-action@v3
 
       - uses: docker/setup-buildx-action@v3
 

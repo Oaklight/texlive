@@ -11,7 +11,14 @@ RUN apt-get update && apt-get install -y \
         texlive-xetex \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the tex-fmt binary (downloaded by the Makefile)
-ARG TEX_FMT_BINARY
-COPY ${TEX_FMT_BINARY} /usr/local/bin/
-RUN chmod +x /usr/local/bin/tex-fmt
+# Copy the tex-fmt binary for the target platform.
+ARG TEX_FMT_DIR=linux
+ARG TARGETARCH
+COPY ${TEX_FMT_DIR}/ /tmp/tex-fmt/
+RUN case "${TARGETARCH}" in \
+        amd64) cp /tmp/tex-fmt/amd64/tex-fmt /usr/local/bin/tex-fmt ;; \
+        arm64) cp /tmp/tex-fmt/arm64/tex-fmt /usr/local/bin/tex-fmt ;; \
+        *) echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac \
+    && chmod +x /usr/local/bin/tex-fmt \
+    && rm -rf /tmp/tex-fmt

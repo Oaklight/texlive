@@ -57,16 +57,18 @@ all: build
 # ============================================================
 
 get-tex-fmt:
+	mkdir -p linux/amd64
 	curl -LO $(TEX_FMT_URL)
-	tar -xzf tex-fmt-x86_64-linux.tar.gz
+	tar -xzf tex-fmt-x86_64-linux.tar.gz -C linux/amd64
 	rm tex-fmt-x86_64-linux.tar.gz
-	chmod +x $(TEX_FMT_BINARY)
+	chmod +x linux/amd64/$(TEX_FMT_BINARY)
 
 get-tex-fmt-alpine:
+	mkdir -p alpine/amd64
 	curl -LO $(TEX_FMT_ALPINE_URL)
-	tar -xzf tex-fmt-x86_64-alpine.tar.gz
+	tar -xzf tex-fmt-x86_64-alpine.tar.gz -C alpine/amd64
 	rm tex-fmt-x86_64-alpine.tar.gz
-	chmod +x $(TEX_FMT_BINARY)
+	chmod +x alpine/amd64/$(TEX_FMT_BINARY)
 
 # ============================================================
 # Debian targets
@@ -74,7 +76,7 @@ get-tex-fmt-alpine:
 
 build-base: get-tex-fmt
 	docker build \
-		--build-arg TEX_FMT_BINARY=$(TEX_FMT_BINARY) \
+		--build-arg TEX_FMT_DIR=linux \
 		-t $(IMAGE_NAME):$(IMAGE_TAG_BASE) \
 		-t $(IMAGE_NAME):$(DEBIAN_TAG_BASE) \
 		-f docker/Dockerfile.debian-base .
@@ -145,7 +147,7 @@ build: build-base build-base-cn build-base-jp build-base-kr \
 alpine-build-base: get-tex-fmt-alpine
 	docker build \
 		--build-arg REGISTRY_MIRROR=$(REGISTRY_MIRROR) \
-		--build-arg TEX_FMT_BINARY=$(TEX_FMT_BINARY) \
+		--build-arg TEX_FMT_DIR=alpine \
 		$(BUILD_ARGS) \
 		-t $(IMAGE_NAME):$(ALPINE_TAG_BASE) \
 		-f docker/Dockerfile.alpine-base .
