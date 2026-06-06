@@ -20,7 +20,7 @@ jobs:
       - name: Get latest tex-fmt version
         id: version
         run: |
-          VERSION=$(curl -s https://api.github.com/repos/WGUNDERWOOD/tex-fmt/releases/latest | grep -oP '"tag_name": "\K[^"]+')
+          VERSION=$(curl -fsSL https://api.github.com/repos/WGUNDERWOOD/tex-fmt/releases/latest | jq -r .tag_name)
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Download tex-fmt binaries
