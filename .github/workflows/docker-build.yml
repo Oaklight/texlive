@@ -82,7 +82,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           tags: |
             ${{ env.IMAGE_NAME }}:base
@@ -115,7 +114,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
@@ -149,7 +147,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
@@ -168,7 +165,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
@@ -188,7 +184,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
@@ -207,7 +202,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
@@ -227,7 +221,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
@@ -246,7 +239,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
@@ -284,7 +276,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-base
@@ -315,7 +306,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
@@ -349,7 +339,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-base-cn
@@ -366,7 +355,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-science-cn
@@ -384,7 +372,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-base-jp
@@ -401,7 +388,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-science-jp
@@ -419,7 +405,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-base-kr
@@ -436,7 +421,6 @@ jobs:
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
-          sbom: true
           provenance: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-science-kr
@@ -445,7 +429,7 @@ jobs:
   smoke:
     needs: [debian-lang, alpine-lang]
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -462,3 +446,49 @@ jobs:
         run: docker pull "${{ env.IMAGE_NAME }}:${{ matrix.tag }}"
       - name: Smoke test
         run: sh test/smoke.sh "${{ env.IMAGE_NAME }}:${{ matrix.tag }}"
+
+  # BuildKit's built-in SBOM attestation fails on the TeX Live images: the
+  # file-level SPDX document exceeds the 80 MiB manifest limit. Generate SBOMs
+  # as workflow artifacts instead. The action is pinned to the v0 ref
+  # (Syft 1.42.3, commit 2026-03-19).
+  sbom:
+    needs: [debian-lang, alpine-lang]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        tag:
+          - base
+          - science
+          - base-cn
+          - science-cn
+          - base-jp
+          - science-jp
+          - base-kr
+          - science-kr
+          - alpine-base
+          - alpine-science
+          - alpine-base-cn
+          - alpine-science-cn
+          - alpine-base-jp
+          - alpine-science-jp
+          - alpine-base-kr
+          - alpine-science-kr
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Generate SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610
+        with:
+          image: ${{ env.IMAGE_NAME }}:${{ matrix.tag }}
+          format: spdx-json
+          output-file: sbom-${{ matrix.tag }}.spdx.json
+          artifact-name: sbom-${{ matrix.tag }}.spdx.json
+          registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          upload-release-assets: false
