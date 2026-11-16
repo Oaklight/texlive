@@ -48,7 +48,7 @@ This Docker image ensures that you can compile LaTeX documents locally even when
 * Includes common LaTeX packages for academic writing (e.g., `natbib`, `graphicx`, `amsmath`). The `ucetd` class is not bundled; see [`test-uchicago/`](./test-uchicago/) for a working example.
 * Optimized for use with VSCode's LaTeX Workshop extension.
 * CI/CD via GitHub Actions for automated builds and pushes.
-* CI generates SPDX JSON SBOMs for each published tag and uploads them as workflow artifacts. SBOMs are not embedded in the image manifest or attestation index.
+* CI generates SPDX JSON SBOMs for each published image (primary tag) and uploads them as workflow artifacts. Alias tags such as `latest` and `debian-*` share the same digest and SBOM, so they are not scanned separately. SBOMs are not embedded in the image manifest or attestation index.
 
 ## How to Use with VSCode LaTeX Workshop
 
