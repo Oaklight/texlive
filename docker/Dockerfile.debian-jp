@@ -1,8 +1,20 @@
 # ==== Debian Japanese Language Support ====
 ARG BASE_IMAGE=oaklight/texlive:base
 FROM ${BASE_IMAGE}
+ARG BASE_IMAGE
 
 # Japanese support: luatexja, platex, uplatex, jsclasses, haranoaji fonts
 RUN apt-get update && apt-get install -y \
         texlive-lang-japanese \
     && rm -rf /var/lib/apt/lists/*
+
+# OCI image metadata. CI overrides version and revision.
+ARG VERSION=dev
+ARG REVISION=unknown
+LABEL org.opencontainers.image.title="oaklight/texlive debian-science-jp" \
+      org.opencontainers.image.description="Debian-based TeX Live science image with Japanese support" \
+      org.opencontainers.image.source="https://github.com/Oaklight/texlive" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.revision="${REVISION}" \
+      org.opencontainers.image.base.name="${BASE_IMAGE}"

@@ -1,6 +1,7 @@
 # ==== Alpine Science Image ====
 ARG BASE_IMAGE=oaklight/texlive:alpine-base
 FROM ${BASE_IMAGE}
+ARG BASE_IMAGE
 
 # Optional: use a Chinese APK mirror (e.g., mirrors.tuna.tsinghua.edu.cn)
 ARG APK_MIRROR
@@ -16,3 +17,14 @@ RUN apk add --no-cache \
         texmf-dist-fontsrecommended \
         texlive-binextra \
         texmf-dist-binextra
+
+# OCI image metadata. CI overrides version and revision.
+ARG VERSION=dev
+ARG REVISION=unknown
+LABEL org.opencontainers.image.title="oaklight/texlive alpine-science" \
+      org.opencontainers.image.description="Alpine-based TeX Live science image (math, extra, fonts)" \
+      org.opencontainers.image.source="https://github.com/Oaklight/texlive" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.revision="${REVISION}" \
+      org.opencontainers.image.base.name="${BASE_IMAGE}"
