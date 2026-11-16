@@ -43,7 +43,7 @@
 * **两种基础系统可选**：Alpine（更小、更新的 TeX Live）和 Debian（向后兼容）。
 * 预配置了 `pdflatex`、`lualatex`、`xelatex`、`latexmk`、`biber` 和其他必要的 LaTeX 工具。
 * 包含 [`tex-fmt`](https://github.com/WGUNDERWOOD/tex-fmt) 用于 LaTeX 源码格式化。
-* 包含学术写作中常用的 LaTeX 包（如 `ucetd` 文档类、`natbib`、`graphicx` 等）。
+* 包含学术写作中常用的 LaTeX 包（如 `natbib`、`graphicx`、`amsmath` 等）。镜像不包含 `ucetd` 文档类；可参考 [`test-uchicago/`](./test-uchicago/) 中的示例。
 * 针对 VSCode 的 LaTeX Workshop 扩展进行了优化。
 * 通过 GitHub Actions CI/CD 自动构建和推送。
 
@@ -142,9 +142,22 @@ make alpine-clean # 仅删除 Alpine 镜像
 ## 支持的 LaTeX 功能
 
 * 使用 `pdflatex`、`lualatex`、`xelatex` 和 `latexmk` 进行编译。
-* 支持 `ucetd` 文档类（芝加哥大学电子论文和学位论文）。
+* 提供芝加哥大学论文示例 [`test-uchicago/`](./test-uchicago/)（镜像本身不包含 `ucetd` 文档类）。
 * 包含常用包，如 `natbib`、`graphicx`、`amsmath` 等。
 * 中日韩语言支持，通过 `-cn` / `-jp` / `-kr` 变体提供。
+
+## 运行时说明
+
+* 镜像默认以 `root` 运行。挂载项目目录时，请传入宿主机的 UID/GID，避免生成的文件所有者变成 root：
+
+  ```bash
+  docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
+    -v "$PWD:/workspace" -w /workspace oaklight/texlive:latest latexmk -pdf main.tex
+  ```
+
+* Alpine 镜像使用发行版打包的 TeX Live，没有 `tlmgr`。Debian 镜像带有 `tlmgr`，但它以用户模式运行，无法更新系统安装。请拉取更新后的镜像。
+* `minted` 默认不可用：Alpine 没有 Python/LatexMinted，Debian 没有 Pygments，默认编译参数也没有 `-shell-escape`。请改用 `listings` 或 `tex-fmt`。
+* Alpine 镜像没有系统字体（`fc-list` 为空）。中文/日文/韩文通过 TeX 字体（Fandol、HaranoAji、Nanum）工作；按字体名调用 `fontspec`、以及 `noto` 等 `ctex` 字体集不可用。
 
 ## 故障排除
 
