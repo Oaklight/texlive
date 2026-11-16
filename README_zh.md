@@ -48,6 +48,7 @@
 * 包含学术写作中常用的 LaTeX 包（如 `natbib`、`graphicx`、`amsmath` 等）。镜像不包含 `ucetd` 文档类；可参考 [`test-uchicago/`](./test-uchicago/) 中的示例。
 * 针对 VSCode 的 LaTeX Workshop 扩展进行了优化。
 * 通过 GitHub Actions CI/CD 自动构建和推送。
+* CI 为每个发布 tag 生成 SPDX JSON SBOM，并作为 workflow artifact 上传；SBOM 不写入镜像 manifest 或 attestation index。
 
 ## 如何在 VSCode LaTeX Workshop 中使用
 
