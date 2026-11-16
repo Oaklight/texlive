@@ -79,6 +79,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=debian-base
           cache-to: type=gha,mode=max,scope=debian-base
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           tags: |
             ${{ env.IMAGE_NAME }}:base
             ${{ env.IMAGE_NAME }}:debian-base
@@ -107,6 +112,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=debian-science
           cache-to: type=gha,mode=max,scope=debian-science
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:science
@@ -136,6 +146,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=debian-base-cn
           cache-to: type=gha,mode=max,scope=debian-base-cn
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:base-cn
@@ -150,6 +165,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=debian-science-cn
           cache-to: type=gha,mode=max,scope=debian-science-cn
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:science-cn
@@ -165,6 +185,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=debian-base-jp
           cache-to: type=gha,mode=max,scope=debian-base-jp
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:base-jp
@@ -179,6 +204,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=debian-science-jp
           cache-to: type=gha,mode=max,scope=debian-science-jp
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:science-jp
@@ -194,6 +224,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=debian-base-kr
           cache-to: type=gha,mode=max,scope=debian-base-kr
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:base-kr
@@ -208,6 +243,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=debian-science-kr
           cache-to: type=gha,mode=max,scope=debian-science-kr
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:science-kr
@@ -241,6 +281,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=alpine-base
           cache-to: type=gha,mode=max,scope=alpine-base
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           tags: ${{ env.IMAGE_NAME }}:alpine-base
           build-args: TEX_FMT_DIR=alpine
 
@@ -266,6 +311,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=alpine-science
           cache-to: type=gha,mode=max,scope=alpine-science
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           tags: |
             ${{ env.IMAGE_NAME }}:alpine-science
             ${{ env.IMAGE_NAME }}:latest
@@ -294,6 +344,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=alpine-base-cn
           cache-to: type=gha,mode=max,scope=alpine-base-cn
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           tags: ${{ env.IMAGE_NAME }}:alpine-base-cn
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-base
 
@@ -305,6 +360,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=alpine-science-cn
           cache-to: type=gha,mode=max,scope=alpine-science-cn
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           tags: ${{ env.IMAGE_NAME }}:alpine-science-cn
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-science
 
@@ -317,6 +377,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=alpine-base-jp
           cache-to: type=gha,mode=max,scope=alpine-base-jp
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           tags: ${{ env.IMAGE_NAME }}:alpine-base-jp
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-base
 
@@ -328,6 +393,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=alpine-science-jp
           cache-to: type=gha,mode=max,scope=alpine-science-jp
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           tags: ${{ env.IMAGE_NAME }}:alpine-science-jp
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-science
 
@@ -340,6 +410,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=alpine-base-kr
           cache-to: type=gha,mode=max,scope=alpine-base-kr
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           tags: ${{ env.IMAGE_NAME }}:alpine-base-kr
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-base
 
@@ -351,6 +426,11 @@ jobs:
           push: true
           cache-from: type=gha,scope=alpine-science-kr
           cache-to: type=gha,mode=max,scope=alpine-science-kr
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          sbom: true
+          provenance: true
           tags: ${{ env.IMAGE_NAME }}:alpine-science-kr
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-science
 
