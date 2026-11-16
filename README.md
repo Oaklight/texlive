@@ -37,6 +37,8 @@ This Docker image ensures that you can compile LaTeX documents locally even when
 | `debian-science-kr` / `science-kr` | Debian trixie | 2024 | Science + Korean |
 
 > Each language variant installs the language-specific TeX packages for that country. CN/JP/KR images are independently built with different contents.
+>
+> **Platform support:** Alpine and Debian images are published for `linux/amd64` and `linux/arm64`. The `tex-fmt` binary is only available for Alpine `amd64`; Alpine `arm64` images omit it.
 
 ## Features
 

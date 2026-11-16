@@ -286,6 +286,7 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
           sbom: true
           provenance: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-base
           build-args: TEX_FMT_DIR=alpine
 
@@ -316,6 +317,7 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
           sbom: true
           provenance: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.IMAGE_NAME }}:alpine-science
             ${{ env.IMAGE_NAME }}:latest
@@ -349,6 +351,7 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
           sbom: true
           provenance: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-base-cn
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-base
 
@@ -365,6 +368,7 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
           sbom: true
           provenance: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-science-cn
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-science
 
@@ -382,6 +386,7 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
           sbom: true
           provenance: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-base-jp
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-base
 
@@ -398,6 +403,7 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
           sbom: true
           provenance: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-science-jp
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-science
 
@@ -415,6 +421,7 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
           sbom: true
           provenance: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-base-kr
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-base
 
@@ -431,6 +438,7 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
           sbom: true
           provenance: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:alpine-science-kr
           build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:alpine-science
 
