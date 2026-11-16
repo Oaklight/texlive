@@ -1,0 +1,92 @@
+name: Build Pull Request Images
+
+on:
+  pull_request:
+    paths:
+      - "docker/Dockerfile.*"
+      - "Makefile"
+      - "test/smoke.sh"
+      - ".dockerignore"
+      - ".github/workflows/docker-pr.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-pr-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE_NAME: oaklight/texlive
+
+jobs:
+  fetch-tex-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest tex-fmt version
+        id: version
+        run: |
+          VERSION=$(curl -fsSL https://api.github.com/repos/WGUNDERWOOD/tex-fmt/releases/latest | jq -r .tag_name)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Download tex-fmt binaries
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          mkdir -p linux/amd64 alpine/amd64
+          curl -L -o tex-fmt-x86_64-linux.tar.gz "https://github.com/WGUNDERWOOD/tex-fmt/releases/download/${VERSION}/tex-fmt-x86_64-linux.tar.gz"
+          curl -L -o tex-fmt-x86_64-alpine.tar.gz "https://github.com/WGUNDERWOOD/tex-fmt/releases/download/${VERSION}/tex-fmt-x86_64-alpine.tar.gz"
+          tar -xzf tex-fmt-x86_64-linux.tar.gz -C linux/amd64
+          tar -xzf tex-fmt-x86_64-alpine.tar.gz -C alpine/amd64
+
+      - name: Upload tex-fmt artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tex-fmt-binaries
+          path: |
+            linux/amd64/tex-fmt
+            alpine/amd64/tex-fmt
+
+  build-alpine:
+    needs: fetch-tex-fmt
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: tex-fmt-binaries
+
+      - name: Build alpine-base
+        run: docker build -f docker/Dockerfile.alpine-base --build-arg TEX_FMT_DIR=alpine -t "$IMAGE_NAME:pr-alpine-base" .
+
+      - name: Build alpine-science
+        run: docker build -f docker/Dockerfile.alpine-science --build-arg BASE_IMAGE="$IMAGE_NAME:pr-alpine-base" -t "$IMAGE_NAME:pr-alpine-science" .
+
+      - name: Build alpine-science-cn
+        run: docker build -f docker/Dockerfile.alpine-cn --build-arg BASE_IMAGE="$IMAGE_NAME:pr-alpine-science" -t "$IMAGE_NAME:pr-alpine-science-cn" .
+
+      - name: Smoke test alpine-science-cn
+        run: sh test/smoke.sh "$IMAGE_NAME:pr-alpine-science-cn"
+
+  build-debian:
+    needs: fetch-tex-fmt
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: tex-fmt-binaries
+
+      - name: Build debian-base
+        run: docker build -f docker/Dockerfile.debian-base --build-arg TEX_FMT_DIR=linux -t "$IMAGE_NAME:pr-debian-base" .
+
+      - name: Build debian-science
+        run: docker build -f docker/Dockerfile.debian-science --build-arg BASE_IMAGE="$IMAGE_NAME:pr-debian-base" -t "$IMAGE_NAME:pr-debian-science" .
+
+      - name: Build debian-science-cn
+        run: docker build -f docker/Dockerfile.debian-cn --build-arg BASE_IMAGE="$IMAGE_NAME:pr-debian-science" -t "$IMAGE_NAME:pr-debian-science-cn" .
+
+      - name: Smoke test debian-science-cn
+        run: sh test/smoke.sh "$IMAGE_NAME:pr-debian-science-cn"
