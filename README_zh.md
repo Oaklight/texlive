@@ -16,16 +16,16 @@
 
 | 标签 | 基础系统 | TeX Live | 说明 |
 |------|----------|----------|------|
-| `latest` | Alpine 3.23 | 2025 | `alpine-science` 的别名 |
+| `latest` | Alpine 3.24 | 2026 | `alpine-science` 的别名 |
 | **Alpine** | | | |
-| `alpine-base` | Alpine 3.23 | 2025 | 核心 LaTeX + LuaTeX + XeTeX + biber |
-| `alpine-science` | Alpine 3.23 | 2025 | + 科学/数学/字体包 |
-| `alpine-base-cn` | Alpine 3.23 | 2025 | Base + 中文支持（ctex、xeCJK、CJKutf8） |
-| `alpine-science-cn` | Alpine 3.23 | 2025 | Science + 中文支持 |
-| `alpine-base-jp` | Alpine 3.23 | 2025 | Base + 日文支持（luatexja、platex、uplatex） |
-| `alpine-science-jp` | Alpine 3.23 | 2025 | Science + 日文支持 |
-| `alpine-base-kr` | Alpine 3.23 | 2025 | Base + 韩文支持（kotex、nanumtype1） |
-| `alpine-science-kr` | Alpine 3.23 | 2025 | Science + 韩文支持 |
+| `alpine-base` | Alpine 3.24 | 2026 | 核心 LaTeX + LuaTeX + XeTeX + biber |
+| `alpine-science` | Alpine 3.24 | 2026 | + 科学/数学/字体包 |
+| `alpine-base-cn` | Alpine 3.24 | 2026 | Base + 中文支持（ctex、xeCJK、CJKutf8） |
+| `alpine-science-cn` | Alpine 3.24 | 2026 | Science + 中文支持 |
+| `alpine-base-jp` | Alpine 3.24 | 2026 | Base + 日文支持（luatexja、platex、uplatex） |
+| `alpine-science-jp` | Alpine 3.24 | 2026 | Science + 日文支持 |
+| `alpine-base-kr` | Alpine 3.24 | 2026 | Base + 韩文支持（kotex、nanumtype1） |
+| `alpine-science-kr` | Alpine 3.24 | 2026 | Science + 韩文支持 |
 | **Debian** | | | |
 | `debian-base` / `base` | Debian bookworm | 2022 | 核心 LaTeX + LuaTeX + XeTeX + biber |
 | `debian-science` / `science` | Debian bookworm | 2022 | + 科学/数学/字体包 |

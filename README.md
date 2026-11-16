@@ -16,16 +16,16 @@ This Docker image ensures that you can compile LaTeX documents locally even when
 
 | Tag | Base | TeX Live | Description |
 |-----|------|----------|-------------|
-| `latest` | Alpine 3.23 | 2025 | Alias for `alpine-science` |
+| `latest` | Alpine 3.24 | 2026 | Alias for `alpine-science` |
 | **Alpine** | | | |
-| `alpine-base` | Alpine 3.23 | 2025 | Core LaTeX + LuaTeX + XeTeX + biber |
-| `alpine-science` | Alpine 3.23 | 2025 | + science/math/fonts packages |
-| `alpine-base-cn` | Alpine 3.23 | 2025 | Base + Chinese (ctex, xeCJK, CJKutf8) |
-| `alpine-science-cn` | Alpine 3.23 | 2025 | Science + Chinese |
-| `alpine-base-jp` | Alpine 3.23 | 2025 | Base + Japanese (luatexja, platex, uplatex) |
-| `alpine-science-jp` | Alpine 3.23 | 2025 | Science + Japanese |
-| `alpine-base-kr` | Alpine 3.23 | 2025 | Base + Korean (kotex, nanumtype1) |
-| `alpine-science-kr` | Alpine 3.23 | 2025 | Science + Korean |
+| `alpine-base` | Alpine 3.24 | 2026 | Core LaTeX + LuaTeX + XeTeX + biber |
+| `alpine-science` | Alpine 3.24 | 2026 | + science/math/fonts packages |
+| `alpine-base-cn` | Alpine 3.24 | 2026 | Base + Chinese (ctex, xeCJK, CJKutf8) |
+| `alpine-science-cn` | Alpine 3.24 | 2026 | Science + Chinese |
+| `alpine-base-jp` | Alpine 3.24 | 2026 | Base + Japanese (luatexja, platex, uplatex) |
+| `alpine-science-jp` | Alpine 3.24 | 2026 | Science + Japanese |
+| `alpine-base-kr` | Alpine 3.24 | 2026 | Base + Korean (kotex, nanumtype1) |
+| `alpine-science-kr` | Alpine 3.24 | 2026 | Science + Korean |
 | **Debian** | | | |
 | `debian-base` / `base` | Debian bookworm | 2022 | Core LaTeX + LuaTeX + XeTeX + biber |
 | `debian-science` / `science` | Debian bookworm | 2022 | + science/math/fonts packages |

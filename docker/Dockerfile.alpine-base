@@ -1,6 +1,6 @@
 # ==== Alpine Base Image ====
 ARG REGISTRY_MIRROR=docker.io
-FROM ${REGISTRY_MIRROR}/alpine:3.23
+FROM ${REGISTRY_MIRROR}/alpine:3.24
 
 # Optional: use a Chinese APK mirror (e.g., mirrors.tuna.tsinghua.edu.cn)
 ARG APK_MIRROR
