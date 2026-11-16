@@ -37,6 +37,8 @@
 | `debian-science-kr` / `science-kr` | Debian trixie | 2024 | Science + 韩文支持 |
 
 > 每个语言变体独立构建，安装对应国家的 TeX 语言包。CN/JP/KR 镜像内容各不相同。
+>
+> **平台支持：** Alpine 和 Debian 镜像均发布 `linux/amd64` 和 `linux/arm64`。`tex-fmt` 二进制仅提供 Alpine `amd64` 版本，因此 Alpine `arm64` 镜像不包含 `tex-fmt`。
 
 ## 功能
 

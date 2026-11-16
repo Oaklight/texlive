@@ -21,15 +21,17 @@ RUN apk add --no-cache \
         biber \
         make
 
-# Copy the tex-fmt binary for the target platform.
+# Copy the tex-fmt binary for the target platform. tex-fmt publishes an
+# x86_64-alpine build but no aarch64-alpine build, so arm64 skips it.
 ARG TEX_FMT_DIR=alpine
 ARG TARGETARCH
 COPY ${TEX_FMT_DIR}/ /tmp/tex-fmt/
 RUN case "${TARGETARCH}" in \
-        amd64) cp /tmp/tex-fmt/amd64/tex-fmt /usr/local/bin/tex-fmt ;; \
+        amd64) cp /tmp/tex-fmt/amd64/tex-fmt /usr/local/bin/tex-fmt \
+               && chmod +x /usr/local/bin/tex-fmt ;; \
+        arm64) echo "tex-fmt has no aarch64-alpine build; skipping" ;; \
         *) echo "Unsupported Alpine architecture: ${TARGETARCH}" >&2; exit 1 ;; \
     esac \
-    && chmod +x /usr/local/bin/tex-fmt \
     && rm -rf /tmp/tex-fmt
 
 # OCI image metadata. CI overrides version and revision.
