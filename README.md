@@ -43,7 +43,7 @@ This Docker image ensures that you can compile LaTeX documents locally even when
 * **Two base OS choices**: Alpine (smaller, newer TeX Live) and Debian (backward-compatible).
 * Pre-configured with `pdflatex`, `lualatex`, `xelatex`, `latexmk`, `biber`, and other essential LaTeX tools.
 * Includes [`tex-fmt`](https://github.com/WGUNDERWOOD/tex-fmt) for LaTeX source formatting.
-* Includes common LaTeX packages for academic writing (e.g., `ucetd` class, `natbib`, `graphicx`, etc.).
+* Includes common LaTeX packages for academic writing (e.g., `natbib`, `graphicx`, `amsmath`). The `ucetd` class is not bundled; see [`test-uchicago/`](./test-uchicago/) for a working example.
 * Optimized for use with VSCode's LaTeX Workshop extension.
 * CI/CD via GitHub Actions for automated builds and pushes.
 
@@ -142,9 +142,23 @@ Run `make help` for a full list of targets and variables.
 ## Supported LaTeX Features
 
 * Compilation with `pdflatex`, `lualatex`, `xelatex`, and `latexmk`.
-* Support for the `ucetd` document class (University of Chicago Electronic Theses and Dissertations).
+* A working University of Chicago thesis example under [`test-uchicago/`](./test-uchicago/) (the `ucetd` class is not installed in the image).
 * Common packages like `natbib`, `graphicx`, `amsmath`, and more.
 * CJK language support (Chinese, Japanese, Korean) in `-cn` / `-jp` / `-kr` variants.
+
+## Runtime notes
+
+* The images run as `root` by default. When you mount a project directory, pass the host UID/GID so generated files stay editable:
+
+  ```bash
+  docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
+    -v "$PWD:/workspace" -w /workspace oaklight/texlive:latest latexmk -pdf main.tex
+  ```
+
+* Alpine images use the distro TeX Live packages, so `tlmgr` is absent. Debian images ship `tlmgr`, but it runs in user mode and cannot update the system installation. Pull a newer image instead.
+* `minted` does not work out of the box: Alpine has no Python/LatexMinted, Debian has no Pygments, and the default recipe does not pass `-shell-escape`. Use `listings` or `tex-fmt` instead.
+* Alpine images include the `arara` wrapper, but it requires Java, which is not installed. Use `latexmk` or `make` instead.
+* Alpine images ship no system fonts (`fc-list` is empty). CJK works through TeX fonts (Fandol, HaranoAji, Nanum); `fontspec` by system font name and `ctex` fontsets such as `noto` are unavailable.
 
 ## Troubleshooting
 
