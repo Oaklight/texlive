@@ -1,11 +1,13 @@
 # ==== Debian Base Image ====
-FROM debian:bookworm-slim AS base
+FROM debian:trixie-slim AS base
 
 # Install required packages for the base version
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
         biber \
         latexmk \
         make \
+        texlive-bibtex-extra \
+        texlive-fonts-recommended \
         texlive-plain-generic \
         texlive-luatex \
         texlive-xetex \

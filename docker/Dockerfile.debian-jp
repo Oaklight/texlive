@@ -3,6 +3,6 @@ ARG BASE_IMAGE=oaklight/texlive:base
 FROM ${BASE_IMAGE}
 
 # Japanese support: luatexja, platex, uplatex, jsclasses, haranoaji fonts
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
         texlive-lang-japanese \
     && rm -rf /var/lib/apt/lists/*

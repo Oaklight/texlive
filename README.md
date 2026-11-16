@@ -27,14 +27,14 @@ This Docker image ensures that you can compile LaTeX documents locally even when
 | `alpine-base-kr` | Alpine 3.23 | 2025 | Base + Korean (kotex, nanumtype1) |
 | `alpine-science-kr` | Alpine 3.23 | 2025 | Science + Korean |
 | **Debian** | | | |
-| `debian-base` / `base` | Debian bookworm | 2022 | Core LaTeX + LuaTeX + XeTeX + biber |
-| `debian-science` / `science` | Debian bookworm | 2022 | + science/math/fonts packages |
-| `debian-base-cn` / `base-cn` | Debian bookworm | 2022 | Base + Chinese |
-| `debian-science-cn` / `science-cn` | Debian bookworm | 2022 | Science + Chinese |
-| `debian-base-jp` / `base-jp` | Debian bookworm | 2022 | Base + Japanese |
-| `debian-science-jp` / `science-jp` | Debian bookworm | 2022 | Science + Japanese |
-| `debian-base-kr` / `base-kr` | Debian bookworm | 2022 | Base + Korean |
-| `debian-science-kr` / `science-kr` | Debian bookworm | 2022 | Science + Korean |
+| `debian-base` / `base` | Debian trixie | 2024 | Core LaTeX + LuaTeX + XeTeX + biber |
+| `debian-science` / `science` | Debian trixie | 2024 | + science/math/fonts packages |
+| `debian-base-cn` / `base-cn` | Debian trixie | 2024 | Base + Chinese |
+| `debian-science-cn` / `science-cn` | Debian trixie | 2024 | Science + Chinese |
+| `debian-base-jp` / `base-jp` | Debian trixie | 2024 | Base + Japanese |
+| `debian-science-jp` / `science-jp` | Debian trixie | 2024 | Science + Japanese |
+| `debian-base-kr` / `base-kr` | Debian trixie | 2024 | Base + Korean |
+| `debian-science-kr` / `science-kr` | Debian trixie | 2024 | Science + Korean |
 
 > Each language variant installs the language-specific TeX packages for that country. CN/JP/KR images are independently built with different contents.
 
