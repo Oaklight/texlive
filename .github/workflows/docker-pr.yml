@@ -56,43 +56,18 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: tex-fmt-binaries
-      - uses: docker/setup-buildx-action@v3
 
       - name: Build alpine-base
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/Dockerfile.alpine-base
-          load: true
-          tags: ${{ env.IMAGE_NAME }}:pr-alpine-base
-          build-args: TEX_FMT_DIR=alpine
-          cache-from: type=gha,scope=pr-alpine-base
-          cache-to: type=gha,mode=max,scope=pr-alpine-base
+        run: docker build -f docker/Dockerfile.alpine-base --build-arg TEX_FMT_DIR=alpine -t "$IMAGE_NAME:pr-alpine-base" .
 
       - name: Build alpine-science
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/Dockerfile.alpine-science
-          load: true
-          tags: ${{ env.IMAGE_NAME }}:pr-alpine-science
-          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:pr-alpine-base
-          cache-from: type=gha,scope=pr-alpine-science
-          cache-to: type=gha,mode=max,scope=pr-alpine-science
+        run: docker build -f docker/Dockerfile.alpine-science --build-arg BASE_IMAGE="$IMAGE_NAME:pr-alpine-base" -t "$IMAGE_NAME:pr-alpine-science" .
 
       - name: Build alpine-science-cn
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/Dockerfile.alpine-cn
-          load: true
-          tags: ${{ env.IMAGE_NAME }}:pr-alpine-science-cn
-          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:pr-alpine-science
-          cache-from: type=gha,scope=pr-alpine-science-cn
-          cache-to: type=gha,mode=max,scope=pr-alpine-science-cn
+        run: docker build -f docker/Dockerfile.alpine-cn --build-arg BASE_IMAGE="$IMAGE_NAME:pr-alpine-science" -t "$IMAGE_NAME:pr-alpine-science-cn" .
 
       - name: Smoke test alpine-science-cn
-        run: sh test/smoke.sh "${{ env.IMAGE_NAME }}:pr-alpine-science-cn"
+        run: sh test/smoke.sh "$IMAGE_NAME:pr-alpine-science-cn"
 
   build-debian:
     needs: fetch-tex-fmt
@@ -103,40 +78,15 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: tex-fmt-binaries
-      - uses: docker/setup-buildx-action@v3
 
       - name: Build debian-base
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/Dockerfile.debian-base
-          load: true
-          tags: ${{ env.IMAGE_NAME }}:pr-debian-base
-          build-args: TEX_FMT_DIR=linux
-          cache-from: type=gha,scope=pr-debian-base
-          cache-to: type=gha,mode=max,scope=pr-debian-base
+        run: docker build -f docker/Dockerfile.debian-base --build-arg TEX_FMT_DIR=linux -t "$IMAGE_NAME:pr-debian-base" .
 
       - name: Build debian-science
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/Dockerfile.debian-science
-          load: true
-          tags: ${{ env.IMAGE_NAME }}:pr-debian-science
-          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:pr-debian-base
-          cache-from: type=gha,scope=pr-debian-science
-          cache-to: type=gha,mode=max,scope=pr-debian-science
+        run: docker build -f docker/Dockerfile.debian-science --build-arg BASE_IMAGE="$IMAGE_NAME:pr-debian-base" -t "$IMAGE_NAME:pr-debian-science" .
 
       - name: Build debian-science-cn
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/Dockerfile.debian-cn
-          load: true
-          tags: ${{ env.IMAGE_NAME }}:pr-debian-science-cn
-          build-args: BASE_IMAGE=${{ env.IMAGE_NAME }}:pr-debian-science
-          cache-from: type=gha,scope=pr-debian-science-cn
-          cache-to: type=gha,mode=max,scope=pr-debian-science-cn
+        run: docker build -f docker/Dockerfile.debian-cn --build-arg BASE_IMAGE="$IMAGE_NAME:pr-debian-science" -t "$IMAGE_NAME:pr-debian-science-cn" .
 
       - name: Smoke test debian-science-cn
-        run: sh test/smoke.sh "${{ env.IMAGE_NAME }}:pr-debian-science-cn"
+        run: sh test/smoke.sh "$IMAGE_NAME:pr-debian-science-cn"
