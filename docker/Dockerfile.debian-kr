@@ -3,6 +3,6 @@ ARG BASE_IMAGE=oaklight/texlive:base
 FROM ${BASE_IMAGE}
 
 # Korean support: kotex, nanumtype1, Nanum fonts
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
         texlive-lang-korean \
     && rm -rf /var/lib/apt/lists/*

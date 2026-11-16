@@ -27,14 +27,14 @@
 | `alpine-base-kr` | Alpine 3.24 | 2026 | Base + 韩文支持（kotex、nanumtype1） |
 | `alpine-science-kr` | Alpine 3.24 | 2026 | Science + 韩文支持 |
 | **Debian** | | | |
-| `debian-base` / `base` | Debian bookworm | 2022 | 核心 LaTeX + LuaTeX + XeTeX + biber |
-| `debian-science` / `science` | Debian bookworm | 2022 | + 科学/数学/字体包 |
-| `debian-base-cn` / `base-cn` | Debian bookworm | 2022 | Base + 中文支持 |
-| `debian-science-cn` / `science-cn` | Debian bookworm | 2022 | Science + 中文支持 |
-| `debian-base-jp` / `base-jp` | Debian bookworm | 2022 | Base + 日文支持 |
-| `debian-science-jp` / `science-jp` | Debian bookworm | 2022 | Science + 日文支持 |
-| `debian-base-kr` / `base-kr` | Debian bookworm | 2022 | Base + 韩文支持 |
-| `debian-science-kr` / `science-kr` | Debian bookworm | 2022 | Science + 韩文支持 |
+| `debian-base` / `base` | Debian trixie | 2024 | 核心 LaTeX + LuaTeX + XeTeX + biber |
+| `debian-science` / `science` | Debian trixie | 2024 | + 科学/数学/字体包 |
+| `debian-base-cn` / `base-cn` | Debian trixie | 2024 | Base + 中文支持 |
+| `debian-science-cn` / `science-cn` | Debian trixie | 2024 | Science + 中文支持 |
+| `debian-base-jp` / `base-jp` | Debian trixie | 2024 | Base + 日文支持 |
+| `debian-science-jp` / `science-jp` | Debian trixie | 2024 | Science + 日文支持 |
+| `debian-base-kr` / `base-kr` | Debian trixie | 2024 | Base + 韩文支持 |
+| `debian-science-kr` / `science-kr` | Debian trixie | 2024 | Science + 韩文支持 |
 
 > 每个语言变体独立构建，安装对应国家的 TeX 语言包。CN/JP/KR 镜像内容各不相同。
 

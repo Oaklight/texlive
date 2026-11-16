@@ -2,8 +2,13 @@
 ARG BASE_IMAGE=oaklight/texlive:base
 FROM ${BASE_IMAGE}
 
-# Install additional packages for the science version
-RUN apt-get update && apt-get install -y \
+# Install additional packages for the science version.
+# --no-install-recommends drops the optional Java tooling, mupdf-tools, and
+# system Noto/IPA fonts. TeX fonts and CJK support are unaffected.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ghostscript \
+        liblog-log4perl-perl \
+        ruby \
         texlive-science \
         texlive-latex-extra \
         texlive-extra-utils \
