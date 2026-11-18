@@ -17,6 +17,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         texlive-fonts-recommended \
     && rm -rf /var/lib/apt/lists/*
 
+# Multilingual support: European babel languages and Cyrillic/Arabic.
+# Same package set and purpose as the Alpine science image; the Debian babel
+# packages are split per language, so all six are listed explicitly.
+# fontconfig + fonts-dejavu-core give xelatex/lualatex a Cyrillic-capable
+# system font; fonts-hosny-amiri provides Amiri for Arabic.
+# Installed size: about 95 MiB (measured on debian-science).
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        texlive-lang-french \
+        texlive-lang-german \
+        texlive-lang-spanish \
+        texlive-lang-italian \
+        texlive-lang-cyrillic \
+        texlive-lang-arabic \
+        fontconfig \
+        fonts-dejavu-core \
+        fonts-hosny-amiri \
+    && fc-cache -f \
+    && rm -rf /var/lib/apt/lists/*
+
 # OCI image metadata. CI overrides version and revision.
 ARG VERSION=dev
 ARG REVISION=unknown

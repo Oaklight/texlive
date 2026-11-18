@@ -159,7 +159,8 @@ Run `make help` for a full list of targets and variables.
 * Compilation with `pdflatex`, `lualatex`, `xelatex`, and `latexmk`.
 * A working University of Chicago thesis example under [`test-uchicago/`](./test-uchicago/) (the `ucetd` class is not installed in the image).
 * Common packages like `natbib`, `graphicx`, `amsmath`, and more.
-* CJK language support (Chinese, Japanese, Korean) in `-cn` / `-jp` / `-kr` variants.
+* CJK language support (Chinese, Japanese, Korean) in the `-cn` / `-jp` / `-kr` variants.
+* European languages via babel (French, German, Spanish, Italian) and Cyrillic (Russian, Ukrainian) with `pdflatex` or `xelatex`. Arabic uses `xelatex` + `polyglossia`.
 
 ## Runtime notes
 
@@ -173,7 +174,7 @@ Run `make help` for a full list of targets and variables.
 * Alpine images use the distro TeX Live packages, so `tlmgr` is absent. Debian images ship `tlmgr`, but it runs in user mode and cannot update the system installation. Pull a newer image instead.
 * `minted` does not work out of the box: Alpine has no Python/LatexMinted, Debian has no Pygments, and the default recipe does not pass `-shell-escape`. Use `listings` or `tex-fmt` instead.
 * Alpine images include the `arara` wrapper, but it requires Java, which is not installed. Use `latexmk` or `make` instead.
-* Alpine images ship no system fonts (`fc-list` is empty). CJK works through TeX fonts (Fandol, HaranoAji, Nanum); `fontspec` by system font name and `ctex` fontsets such as `noto` are unavailable.
+* Science images now ship system fonts (DejaVu for Cyrillic, Noto Sans Arabic on Alpine, Amiri on Debian) so `fontspec` can select them by name. `alpine-base` and `debian-base` still have no system fonts; use a science image for Cyrillic/Arabic.
 
 ## Troubleshooting
 
