@@ -159,7 +159,8 @@ Run `make help` for a full list of targets and variables.
 * Compilation with `pdflatex`, `lualatex`, `xelatex`, and `latexmk`.
 * A working University of Chicago thesis example under [`test-uchicago/`](./test-uchicago/) (the `ucetd` class is not installed in the image).
 * Common packages like `natbib`, `graphicx`, `amsmath`, and more.
-* CJK language support (Chinese, Japanese, Korean) in `-cn` / `-jp` / `-kr` variants.
+* CJK language support (Chinese, Japanese, Korean) in the `-cn` / `-jp` / `-kr` variants.
+* European languages via babel (French, German, Spanish, Italian) and Cyrillic (Russian, Ukrainian) with `pdflatex` or `xelatex`. Arabic uses `xelatex` + `polyglossia`.
 
 ## Runtime notes
 
@@ -173,7 +174,7 @@ Run `make help` for a full list of targets and variables.
 * Alpine images use the distro TeX Live packages, so `tlmgr` is absent. Debian images ship `tlmgr`, but it runs in user mode and cannot update the system installation. Pull a newer image instead.
 * `minted` is intentionally not supported. It needs Python/Pygments in the image and `-shell-escape` in every compile invocation; adding both grows the images and raises the CVE surface, and enabling shell escape by default is a security regression for a tool that compiles untrusted documents. Use the `listings` package for highlighted listings, or `tex-fmt` for formatting LaTeX source. If you control your own copy of the image and your documents, install `pygments` and pass `-shell-escape` yourself; the recipe in this repository will not do it for you.
 * Alpine images include the `arara` wrapper, but it requires Java, which is not installed. Use `latexmk` or `make` instead.
-* Alpine images ship no system fonts (`fc-list` is empty). CJK works through TeX fonts (Fandol, HaranoAji, Nanum); `fontspec` by system font name and `ctex` fontsets such as `noto` are unavailable.
+* Science images now ship system fonts (DejaVu for Cyrillic, Noto Sans Arabic on Alpine, Amiri on Debian) so `fontspec` can select them by name. `alpine-base` and `debian-base` still have no system fonts; use a science image for Cyrillic/Arabic.
 
 ## Troubleshooting
 

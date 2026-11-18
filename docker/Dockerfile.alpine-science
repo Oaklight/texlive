@@ -18,6 +18,28 @@ RUN apk add --no-cache \
         texlive-binextra \
         texmf-dist-binextra
 
+# Multilingual support: European babel languages and Cyrillic/Arabic.
+#
+# - langfrench/langgerman/langspanish/langitalian provide the babel language
+#   files and hyphenation patterns (pdflatex and xelatex).
+# - langcyrillic provides T2A encoding + Russian/Ukrainian babel support.
+# - langarabic provides polyglossia's Arabic definitions and arabxetex.
+# - fontconfig + font-dejavu give xelatex/lualatex a Cyrillic-capable system
+#   font; font-noto-arabic provides Noto Sans Arabic for Arabic documents.
+#
+# Installed size: about 137 MiB uncompressed (measured on alpine-science).
+RUN apk add --no-cache \
+        texmf-dist-langfrench \
+        texmf-dist-langgerman \
+        texmf-dist-langspanish \
+        texmf-dist-langitalian \
+        texmf-dist-langcyrillic \
+        texmf-dist-langarabic \
+        fontconfig \
+        font-dejavu \
+        font-noto-arabic \
+    && fc-cache -f
+
 # OCI image metadata. CI overrides version and revision.
 ARG VERSION=dev
 ARG REVISION=unknown

@@ -157,6 +157,7 @@ make alpine-clean # 仅删除 Alpine 镜像
 * 提供芝加哥大学论文示例 [`test-uchicago/`](./test-uchicago/)（镜像本身不包含 `ucetd` 文档类）。
 * 包含常用包，如 `natbib`、`graphicx`、`amsmath` 等。
 * 中日韩语言支持，通过 `-cn` / `-jp` / `-kr` 变体提供。
+* 欧洲语言通过 babel 支持（法语、德语、西班牙语、意大利语）；西里尔字母（俄语、乌克兰语）可用 `pdflatex` 或 `xelatex`；阿拉伯语使用 `xelatex` + `polyglossia`。
 
 ## 运行时说明
 
@@ -170,7 +171,7 @@ make alpine-clean # 仅删除 Alpine 镜像
 * Alpine 镜像使用发行版打包的 TeX Live，没有 `tlmgr`。Debian 镜像带有 `tlmgr`，但它以用户模式运行，无法更新系统安装。请拉取更新后的镜像。
 * 本仓库有意不支持 `minted`。它需要镜像内安装 Python/Pygments，并要求每次编译都传入 `-shell-escape`；这会增大镜像和 CVE 面，而默认开启 shell escape 对编译不受信任文档的工具而言是安全倒退。请使用 `listings` 包实现带高亮的代码清单，或用 `tex-fmt` 格式化 LaTeX 源码。如果你自己维护镜像副本且信任待编译文档，可自行安装 `pygments` 并传入 `-shell-escape`；本仓库的编译配方不会代为开启。
 * Alpine 镜像包含 `arara` 包装脚本，但它需要 Java，而镜像未安装 Java。请改用 `latexmk` 或 `make`。
-* Alpine 镜像没有系统字体（`fc-list` 为空）。中文/日文/韩文通过 TeX 字体（Fandol、HaranoAji、Nanum）工作；按字体名调用 `fontspec`、以及 `noto` 等 `ctex` 字体集不可用。
+* science 镜像现在包含系统字体（西里尔用 DejaVu；阿拉伯语在 Alpine 上用 Noto Sans Arabic，在 Debian 上用 Amiri），`fontspec` 可按名称选用。`alpine-base` 与 `debian-base` 仍无系统字体；需要西里尔/阿拉伯语时请使用 science 镜像。
 
 ## 故障排除
 
