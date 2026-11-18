@@ -1,0 +1,99 @@
+name: Vulnerability Scan
+
+# Policy (see issue #17):
+# - Weekly scan of the two tinyleaf default tags, plus a manual dispatch that
+#   can scan any tag.
+# - Report HIGH and CRITICAL findings. Do not fail the job on them yet: the
+#   TeX Live images carry unfixed Debian/Alpine packages by design, and a
+#   gate that fails on day one would block every merge.
+# - Publish the report as a workflow artifact and as SARIF (code scanning
+#   upload works when the repository has code scanning enabled).
+# - Revisit the threshold once a baseline and an allowlist exist.
+
+on:
+  schedule:
+    - cron: "23 4 * * 1"
+  pull_request:
+    paths:
+      - ".github/workflows/vuln-scan.yml"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to scan (default: both cn defaults)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  security-events: write
+
+env:
+  IMAGE_NAME: oaklight/texlive
+  # aquasec/trivy 0.76.2, linux/amd64, pinned by digest. Using the container
+  # avoids the action's GitHub release download, which intermittently fails.
+  TRIVY_IMAGE: aquasec/trivy:0.76.2@sha256:6fa071ef8daa2e58b90cbf1710bedca91adbb3bf98693533226f442035b836a6
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        tag: ${{ github.event.inputs.tag && fromJSON(format('["{0}"]', github.event.inputs.tag)) || fromJSON('["alpine-science-cn","debian-science-cn"]') }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Scan (table report)
+        env:
+          TRIVY_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          TRIVY_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          docker run --rm \
+            -e TRIVY_USERNAME -e TRIVY_PASSWORD \
+            -v "$PWD:/out" -w /out \
+            "$TRIVY_IMAGE" image \
+            --image-src remote \
+            --scanners vuln \
+            --pkg-types os \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 0 \
+            --format table \
+            --output "trivy-${{ matrix.tag }}.txt" \
+            "${{ env.IMAGE_NAME }}:${{ matrix.tag }}"
+
+      - name: Scan (SARIF)
+        env:
+          TRIVY_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          TRIVY_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          docker run --rm \
+            -e TRIVY_USERNAME -e TRIVY_PASSWORD \
+            -v "$PWD:/out" -w /out \
+            "$TRIVY_IMAGE" image \
+            --image-src remote \
+            --scanners vuln \
+            --pkg-types os \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 0 \
+            --format sarif \
+            --output "trivy-${{ matrix.tag }}.sarif" \
+            "${{ env.IMAGE_NAME }}:${{ matrix.tag }}"
+
+      - name: Upload report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: trivy-${{ matrix.tag }}
+          path: |
+            trivy-${{ matrix.tag }}.txt
+            trivy-${{ matrix.tag }}.sarif
+          if-no-files-found: error
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@9418214df1f2c4b8128c770156c409013b07d6b9 # v3
+        continue-on-error: true
+        with:
+          sarif_file: trivy-${{ matrix.tag }}.sarif
+          category: trivy-${{ matrix.tag }}
