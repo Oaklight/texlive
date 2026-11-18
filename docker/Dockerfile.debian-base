@@ -1,5 +1,8 @@
 # ==== Debian Base Image ====
-FROM debian:trixie-slim AS base
+# Digest pinning: the tag states the release line, the digest makes the build
+# reproducible. Dependabot (.github/dependabot.yml) updates both. To bump by
+# hand: docker buildx imagetools inspect debian:trixie-slim
+FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS base
 
 # Install required packages for the base version
 RUN apt-get update && apt-get install -y --no-install-recommends \

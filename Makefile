@@ -1,8 +1,9 @@
 # Variables
 IMAGE_NAME = oaklight/texlive
 
-# Optional mirrors (for use behind GFW or slow networks)
-REGISTRY_MIRROR ?= docker.io
+# Optional mirrors (for use behind GFW or slow networks). Base image pulls by
+# digest go through the daemon's registry-mirrors setting; APK_MIRROR is passed
+# into the Dockerfiles.
 APK_MIRROR ?=
 
 # Debian image tags (backward-compatible short names + explicit debian- prefix)
@@ -146,7 +147,6 @@ build: build-base build-base-cn build-base-jp build-base-kr \
 
 alpine-build-base: get-tex-fmt-alpine
 	docker build \
-		--build-arg REGISTRY_MIRROR=$(REGISTRY_MIRROR) \
 		--build-arg TEX_FMT_DIR=alpine \
 		$(BUILD_ARGS) \
 		-t $(IMAGE_NAME):$(ALPINE_TAG_BASE) \
@@ -294,13 +294,15 @@ help:
 	@echo "    help                 - Show this help message"
 	@echo ""
 	@echo "Variables:"
-	@echo "  REGISTRY_MIRROR=<host>  - Docker registry mirror (default: docker.io)"
 	@echo "  APK_MIRROR=<host>       - Alpine APK mirror host (e.g., mirrors.tuna.tsinghua.edu.cn)"
+	@echo "  (base images are pulled by digest; use the Docker daemon's registry-mirrors for registry mirrors)"
 	@echo ""
 	@echo "Examples:"
 	@echo "  make alpine-build"
 	@echo "  make alpine-build APK_MIRROR=mirrors.ustc.edu.cn"
-	@echo "  make alpine-build REGISTRY_MIRROR=docker.1ms.run APK_MIRROR=mirrors.tuna.tsinghua.edu.cn"
+	@echo "  # For a registry mirror in China, configure /etc/docker/daemon.json:"
+	@echo "  #   {\"registry-mirrors\": [\"https://docker.1ms.run\"]}"
+	@echo "  # Base images are pinned by digest and still pull through the mirror."
 
 .PHONY: all build build-base build-base-cn build-base-jp build-base-kr
 .PHONY: build-science build-science-cn build-science-jp build-science-kr

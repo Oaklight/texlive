@@ -121,8 +121,20 @@ make alpine-build
 ### Using mirrors (for users in China)
 
 ```bash
-make alpine-build REGISTRY_MIRROR=docker.1ms.run APK_MIRROR=mirrors.tuna.tsinghua.edu.cn
+make alpine-build APK_MIRROR=mirrors.tuna.tsinghua.edu.cn
 ```
+
+Base images are pinned by digest. To mirror Docker Hub, configure the Docker
+daemon instead of passing a build argument:
+
+```json
+// /etc/docker/daemon.json
+{"registry-mirrors": ["https://docker.1ms.run"]}
+```
+
+Digest pulls go through the daemon mirror. `REGISTRY_MIRROR` is no longer a
+Makefile variable because a variable `FROM` would hide the base reference from
+Dependabot and defeat digest updates.
 
 ### Pushing images
 
