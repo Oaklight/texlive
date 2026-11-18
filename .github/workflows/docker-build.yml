@@ -449,8 +449,10 @@ jobs:
 
   # BuildKit's built-in SBOM attestation fails on the TeX Live images: the
   # file-level SPDX document exceeds the 80 MiB manifest limit. Generate SBOMs
-  # as workflow artifacts instead. The action is pinned to the v0 ref
-  # (Syft 1.42.3, commit 2026-03-19).
+  # as workflow artifacts instead, running Syft from a pinned container image
+  # rather than letting an action download a release binary. The GitHub release
+  # CDN intermittently returns 502, which failed 2/16 jobs on run 43970680778;
+  # the retry loop below absorbs that without rerunning the whole workflow.
   sbom:
     needs: [debian-lang, alpine-lang]
     runs-on: ubuntu-latest
@@ -483,12 +485,35 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Generate SBOM
-        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610
+        env:
+          SYFT_REGISTRY_AUTH_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          SYFT_REGISTRY_AUTH_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          set -eu
+          out="$RUNNER_TEMP/sbom-${{ matrix.tag }}.spdx.json"
+          for attempt in 1 2 3; do
+            if docker run --rm \
+                -e SYFT_REGISTRY_AUTH_USERNAME \
+                -e SYFT_REGISTRY_AUTH_PASSWORD \
+                -v "$RUNNER_TEMP:/out" \
+                anchore/syft:v1.42.3@sha256:76ccb84f37da4c8123370b2cdcb62a7a832458fff7eec97e3f7b79e605ec690c \
+                scan "registry:${{ env.IMAGE_NAME }}:${{ matrix.tag }}" \
+                --platform linux/amd64 \
+                -q -o "spdx-json=/out/sbom-${{ matrix.tag }}.spdx.json"; then
+              if [ -s "$out" ]; then
+                cp "$out" "sbom-${{ matrix.tag }}.spdx.json"
+                exit 0
+              fi
+            fi
+            echo "::warning::SBOM scan attempt $attempt failed for ${{ matrix.tag }}"
+            rm -f "$out"
+            [ "$attempt" -eq 3 ] || sleep "$((attempt * 20))"
+          done
+          echo "::error::SBOM scan failed for ${{ matrix.tag }} after 3 attempts"
+          exit 1
+
+      - uses: actions/upload-artifact@v4
         with:
-          image: ${{ env.IMAGE_NAME }}:${{ matrix.tag }}
-          format: spdx-json
-          output-file: sbom-${{ matrix.tag }}.spdx.json
-          artifact-name: sbom-${{ matrix.tag }}.spdx.json
-          registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
-          registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
-          upload-release-assets: false
+          name: sbom-${{ matrix.tag }}.spdx.json
+          path: sbom-${{ matrix.tag }}.spdx.json
+          if-no-files-found: error
