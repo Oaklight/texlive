@@ -121,8 +121,17 @@ make alpine-build
 ### 使用镜像加速（国内用户）
 
 ```bash
-make alpine-build REGISTRY_MIRROR=docker.1ms.run APK_MIRROR=mirrors.tuna.tsinghua.edu.cn
+make alpine-build APK_MIRROR=mirrors.tuna.tsinghua.edu.cn
 ```
+
+基础镜像已固定 digest。要加速 Docker Hub 拉取，请在 Docker 守护进程配置镜像，而不再通过构建参数传入：
+
+```json
+// /etc/docker/daemon.json
+{"registry-mirrors": ["https://docker.1ms.run"]}
+```
+
+按 digest 拉取仍会经过守护进程配置的镜像站。`REGISTRY_MIRROR` 不再是 Makefile 变量：变量形式的 `FROM` 会让 Dependabot 看不到基础镜像引用，从而无法更新 digest。
 
 ### 推送镜像
 

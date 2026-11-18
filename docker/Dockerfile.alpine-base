@@ -1,6 +1,13 @@
 # ==== Alpine Base Image ====
-ARG REGISTRY_MIRROR=docker.io
-FROM ${REGISTRY_MIRROR}/alpine:3.24
+# Digest pinning: the tag states the release line, the digest makes the build
+# reproducible. Dependabot (.github/dependabot.yml) updates both. To bump by
+# hand: docker buildx imagetools inspect alpine:3.24
+#
+# A registry mirror cannot be injected through a build argument here: a
+# variable FROM would hide the reference from Dependabot and defeat digest
+# updates. Configure mirrors in the Docker daemon (/etc/docker/daemon.json,
+# "registry-mirrors") instead; pulls by digest use the mirror normally.
+FROM alpine:3.24@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf
 
 # Optional: use a Chinese APK mirror (e.g., mirrors.tuna.tsinghua.edu.cn)
 ARG APK_MIRROR

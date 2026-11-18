@@ -1,0 +1,21 @@
+version: 2
+updates:
+  # Base images are pinned by digest in the Dockerfiles. Dependabot updates the
+  # tag and the digest together and opens one PR per base image.
+  - package-ecosystem: "docker"
+    directory: "/docker"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Workflows reference actions by commit SHA with the release tag in a
+  # trailing comment. Dependabot updates both.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(ci)"

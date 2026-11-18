@@ -19,7 +19,7 @@ jobs:
   docker-safety:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Check .dockerignore exists
         run: |
@@ -41,7 +41,7 @@ jobs:
 
       - name: Warn on broad COPY/ADD in Dockerfiles
         run: |
-          FOUND=$(grep -rnE '^\s*(COPY|ADD)\s+\.\s' **/Dockerfile* Dockerfile* docker/Dockerfile* 2>/dev/null || true)
+          FOUND=$(grep -rnE '^\s*(COPY|ADD)\s+\.\s' -- **/Dockerfile* Dockerfile* docker/Dockerfile* 2>/dev/null || true)
           if [ -n "$FOUND" ]; then
             echo "::warning::Broad COPY/ADD found (relies on .dockerignore for safety):"
             echo "$FOUND"
