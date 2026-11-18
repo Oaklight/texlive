@@ -171,7 +171,7 @@ Run `make help` for a full list of targets and variables.
   ```
 
 * Alpine images use the distro TeX Live packages, so `tlmgr` is absent. Debian images ship `tlmgr`, but it runs in user mode and cannot update the system installation. Pull a newer image instead.
-* `minted` does not work out of the box: Alpine has no Python/LatexMinted, Debian has no Pygments, and the default recipe does not pass `-shell-escape`. Use `listings` or `tex-fmt` instead.
+* `minted` is intentionally not supported. It needs Python/Pygments in the image and `-shell-escape` in every compile invocation; adding both grows the images and raises the CVE surface, and enabling shell escape by default is a security regression for a tool that compiles untrusted documents. Use the `listings` package for highlighted listings, or `tex-fmt` for formatting LaTeX source. If you control your own copy of the image and your documents, install `pygments` and pass `-shell-escape` yourself; the recipe in this repository will not do it for you.
 * Alpine images include the `arara` wrapper, but it requires Java, which is not installed. Use `latexmk` or `make` instead.
 * Alpine images ship no system fonts (`fc-list` is empty). CJK works through TeX fonts (Fandol, HaranoAji, Nanum); `fontspec` by system font name and `ctex` fontsets such as `noto` are unavailable.
 
