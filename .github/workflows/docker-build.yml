@@ -28,17 +28,33 @@ jobs:
     steps:
       - name: Get latest tex-fmt version
         id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Used when the GitHub API is unreachable or rate limited. Bump this
+          # together with the monthly rebuild if a newer tex-fmt is wanted.
+          FALLBACK_VERSION: v0.5.7
         run: |
-          VERSION=$(curl -fsSL https://api.github.com/repos/WGUNDERWOOD/tex-fmt/releases/latest | jq -r .tag_name)
+          set -uo pipefail
+          if VERSION=$(gh api repos/WGUNDERWOOD/tex-fmt/releases/latest --jq .tag_name 2>/dev/null) \
+              && [ -n "$VERSION" ]; then
+            echo "tex-fmt version: $VERSION"
+          else
+            VERSION="$FALLBACK_VERSION"
+            echo "::warning::Could not query the tex-fmt release API; using fallback $VERSION"
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Download tex-fmt binaries
         run: |
+          set -euo pipefail
           VERSION="${{ steps.version.outputs.version }}"
           mkdir -p linux/amd64 linux/arm64 alpine/amd64
-          curl -L -o tex-fmt-x86_64-linux.tar.gz "https://github.com/WGUNDERWOOD/tex-fmt/releases/download/${VERSION}/tex-fmt-x86_64-linux.tar.gz"
-          curl -L -o tex-fmt-aarch64-linux.tar.gz "https://github.com/WGUNDERWOOD/tex-fmt/releases/download/${VERSION}/tex-fmt-aarch64-linux.tar.gz"
-          curl -L -o tex-fmt-x86_64-alpine.tar.gz "https://github.com/WGUNDERWOOD/tex-fmt/releases/download/${VERSION}/tex-fmt-x86_64-alpine.tar.gz"
+          base="https://github.com/WGUNDERWOOD/tex-fmt/releases/download/${VERSION}"
+          for name in tex-fmt-x86_64-linux tex-fmt-aarch64-linux tex-fmt-x86_64-alpine; do
+            curl -fL --retry 3 --retry-delay 2 --retry-all-errors \
+              -o "${name}.tar.gz" "${base}/${name}.tar.gz"
+            tar -tzf "${name}.tar.gz" >/dev/null
+          done
           tar -xzf tex-fmt-x86_64-linux.tar.gz -C linux/amd64
           tar -xzf tex-fmt-aarch64-linux.tar.gz -C linux/arm64
           tar -xzf tex-fmt-x86_64-alpine.tar.gz -C alpine/amd64
