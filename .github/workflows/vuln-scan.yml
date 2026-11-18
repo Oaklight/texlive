@@ -42,7 +42,7 @@ jobs:
       matrix:
         tag: ${{ github.event.inputs.tag && fromJSON(format('["{0}"]', github.event.inputs.tag)) || fromJSON('["alpine-science-cn","debian-science-cn"]') }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Scan (table report)
         env:
