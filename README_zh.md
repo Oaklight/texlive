@@ -168,7 +168,7 @@ make alpine-clean # 仅删除 Alpine 镜像
   ```
 
 * Alpine 镜像使用发行版打包的 TeX Live，没有 `tlmgr`。Debian 镜像带有 `tlmgr`，但它以用户模式运行，无法更新系统安装。请拉取更新后的镜像。
-* `minted` 默认不可用：Alpine 没有 Python/LatexMinted，Debian 没有 Pygments，默认编译参数也没有 `-shell-escape`。请改用 `listings` 或 `tex-fmt`。
+* 本仓库有意不支持 `minted`。它需要镜像内安装 Python/Pygments，并要求每次编译都传入 `-shell-escape`；这会增大镜像和 CVE 面，而默认开启 shell escape 对编译不受信任文档的工具而言是安全倒退。请使用 `listings` 包实现带高亮的代码清单，或用 `tex-fmt` 格式化 LaTeX 源码。如果你自己维护镜像副本且信任待编译文档，可自行安装 `pygments` 并传入 `-shell-escape`；本仓库的编译配方不会代为开启。
 * Alpine 镜像包含 `arara` 包装脚本，但它需要 Java，而镜像未安装 Java。请改用 `latexmk` 或 `make`。
 * Alpine 镜像没有系统字体（`fc-list` 为空）。中文/日文/韩文通过 TeX 字体（Fandol、HaranoAji、Nanum）工作；按字体名调用 `fontspec`、以及 `noto` 等 `ctex` 字体集不可用。
 
