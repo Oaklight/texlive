@@ -48,7 +48,15 @@
 * 包含学术写作中常用的 LaTeX 包（如 `natbib`、`graphicx`、`amsmath` 等）。镜像不包含 `ucetd` 文档类；可参考 [`test-uchicago/`](./test-uchicago/) 中的示例。
 * 针对 VSCode 的 LaTeX Workshop 扩展进行了优化。
 * 通过 GitHub Actions CI/CD 自动构建和推送。
-* CI 为每个发布镜像（primary tag）生成 SPDX JSON SBOM，并作为 workflow artifact 上传；`latest`、`debian-*` 等别名 tag 与对应 primary tag 共享 digest 和 SBOM，因此不单独扫描。SBOM 不写入镜像 manifest 或 attestation index。SBOM 由 digest 固定的 `anchore/syft` 容器生成，并对瞬时失败进行重试。
+* CI 为每个发布镜像生成 SPDX JSON SBOM，并作为 workflow artifact 上传。详见[安全与供应链](#安全与供应链)。
+
+## 安全与供应链
+
+* **可复现的基础镜像。** Debian 与 Alpine 基础镜像在 Dockerfile 中按 digest 固定。引用中保留 tag 以显示目标发行版，digest 固定实际内容。
+* **更新机制。** Dependabot 每周为基础镜像 digest 和按 commit SHA 固定的 GitHub Actions 提交 PR；镜像同时按月重建，并在 Dockerfile 或构建工作流变更合入时重建。
+* **SBOM。** 每个发布镜像都生成 SPDX JSON SBOM，并作为 workflow artifact 上传。`latest`、`debian-*` 等别名 tag 与主 tag 共享 digest 和 SBOM，不重复扫描。SBOM 不写入镜像 manifest 或 attestation index。
+* **漏洞扫描。** 每周用 Trivy 扫描 `alpine-science-cn` 与 `debian-science-cn`，报告已修复的 HIGH/CRITICAL 系统包漏洞，并将报告与 SARIF 作为 workflow artifact 上传。扫描目前只报告、不阻断发布，因为 TeX Live 包集中存在上游尚未修复的问题。
+* **运行时。** 镜像默认以 root 运行。编译不受信任的文档时，请用 `--user` 运行容器，并断网、只读挂载源码（见[运行时说明](#运行时说明)）。
 
 ## 如何在 VSCode LaTeX Workshop 中使用
 
