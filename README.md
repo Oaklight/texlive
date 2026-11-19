@@ -48,7 +48,15 @@ This Docker image ensures that you can compile LaTeX documents locally even when
 * Includes common LaTeX packages for academic writing (e.g., `natbib`, `graphicx`, `amsmath`). The `ucetd` class is not bundled; see [`test-uchicago/`](./test-uchicago/) for a working example.
 * Optimized for use with VSCode's LaTeX Workshop extension.
 * CI/CD via GitHub Actions for automated builds and pushes.
-* CI generates SPDX JSON SBOMs for each published image (primary tag) and uploads them as workflow artifacts. Alias tags such as `latest` and `debian-*` share the same digest and SBOM, so they are not scanned separately. SBOMs are not embedded in the image manifest or attestation index. SBOM generation uses a digest-pinned `anchore/syft` container and retries transient failures.
+* CI publishes a SPDX JSON SBOM for each published image as a workflow artifact. See [Security and supply chain](#security-and-supply-chain).
+
+## Security and supply chain
+
+* **Reproducible bases.** The Debian and Alpine base images are pinned by digest in the Dockerfiles. The tag stays in the reference so the intended release line is visible; the digest fixes the content.
+* **Updates.** Dependabot opens weekly PRs for base-image digests and for GitHub Actions pinned by commit SHA. The images are also rebuilt monthly and on every merged change to the Dockerfiles or the build workflow.
+* **SBOM.** Every published image gets a SPDX JSON SBOM, uploaded as a workflow artifact. Alias tags (`latest`, `debian-*`) share the digest and SBOM of their primary tag and are not scanned twice. SBOMs are not embedded in the image manifest or the attestation index.
+* **Vulnerability scanning.** A weekly Trivy scan covers `alpine-science-cn` and `debian-science-cn`, reports fixed HIGH/CRITICAL OS package vulnerabilities, and uploads the report and SARIF file as workflow artifacts. The scan is report-only: it does not block releases, because the TeX Live package set carries findings that upstream has not fixed.
+* **Runtime.** Images run as root by default. When compiling untrusted documents, run the container with `--user`, no network, and a read-only mount of the source (see [Runtime notes](#runtime-notes)).
 
 ## How to Use with VSCode LaTeX Workshop
 
